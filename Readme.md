@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Роман Быков](https://up.htmlacademy.ru/javascript/11/user/427583).
-* Наставник: `Неизвестно`.
+* Наставник: [Игорь Антонов](https://up.htmlacademy.ru/javascript/11/user/3162).
 
 ---
 
