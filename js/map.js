@@ -11,6 +11,8 @@ var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditio
 
 var cards = [];
 
+var mapPins = [];
+
 var showMap = document.querySelector('.map');
 
 //получаю содержимое шаблона
@@ -63,6 +65,12 @@ for (var i = 0; i < 8; i++) {
   }
 }
 
+for (var i = 0; i < 8; i++) {
+  mapPins[i] = {
+
+  }
+}
+
 showMap.classList.remove('map--faded');
 
 //создаю объект со своими данными на основе шаблона
@@ -74,16 +82,18 @@ var renderCards = function (card) {
   cardElement.querySelector('.popup__price').innerHTML = card.offer.price + ' &#x20bd;/ночь';
   cardElement.querySelector('h4 + p').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
   cardElement.querySelector('.checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
+  // не понимаю, почему рандом features тут не работает. создал свои классы для <p>, в задании вроде не запрещено, а по другому не получилось обратиться
   cardElement.querySelector('.popup__features').insertAdjacentHTML('afterbegin', '<li class="features feature--' + card.offer.features + '"></li>');
   cardElement.querySelector('.popup__description').textContent = card.offer.description;
 
   return cardElement;
 }
 
+//п.3 создаю DOM-элементы
 var renderMapPins = function (mapPin) {
   var pinElement = mapPinTemplate.cloneNode(true);
-
-  pinElement.querySelector('img').src = card.author.avatar;
+  //не понимаю, почему не отрисовываются аватары
+  pinElement.querySelector('img').src = mapPin.author.avatar;
   pinElement.querySelector('.map__pin').style.left = mapPin.location.x + 'px';
   pinElement.querySelector('.map__pin').style.top = mapPin.location.y + 'px';
 
@@ -92,10 +102,10 @@ var renderMapPins = function (mapPin) {
 
 var fragment = document.createDocumentFragment();
 
-for (var i = 0; i < 1; i++) {
+for (var i = 0; i < cards.length; i++) {
   fragment.appendChild(renderCards(cards[i]));
 }
 
-var similarListElement = document.querySelector('.map__pins');
+// var similarListElement = document.querySelector('.map__pins');
 
 showMap.appendChild(fragment);
