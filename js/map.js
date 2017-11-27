@@ -16,14 +16,19 @@ var showMap = document.querySelector('.map');
 //получаю содержимое шаблона
 var cardTemplate = document.querySelector('template').content;
 
+var mapPinTemplate = document.querySelector('.map__pin').content;
+
+//общий рандом
 var randomIndex = function (min, max) {
   return Math.floor(min + Math.random() * (max - min));
 };
 
+//рандом для features
 var randomFeaturesIndex = function () {
   return Math.floor(Math.random() * FEATURES.length + 1);
 };
 
+//получаю массив features рандомной длины
 var randomFeatures = function () {
   var featuresList = [];
   for (var i = 0; i < randomFeaturesIndex(); i++) {
@@ -32,6 +37,7 @@ var randomFeatures = function () {
   return featuresList;
 };
 
+//создаю массив из 8 карточек
 for (var i = 0; i < 8; i++) {
   cards[i] = {
     author: {
@@ -39,7 +45,7 @@ for (var i = 0; i < 8; i++) {
     },
     offer: {
       title: OFFERS_HEADINGS[i],
-      // address: location.randomIndex(300, 900), location.randomIndex(100, 500),
+      address: location.x + ', ' + location.y,
       price: randomIndex(1000, 1000000),
       type: HOUSE_TYPES[randomIndex(0, 2)],
       rooms: randomIndex(1, 5),
@@ -49,12 +55,17 @@ for (var i = 0; i < 8; i++) {
       features: randomFeatures(),
       description: '',
       photos: []
+    },
+    location: {
+      x: randomIndex(300, 900),
+      y: randomIndex(100, 500)
     }
   }
 }
 
 showMap.classList.remove('map--faded');
 
+//создаю объект со своими данными на основе шаблона
 var renderCards = function (card) {
   var cardElement = cardTemplate.cloneNode(true);
 
@@ -64,9 +75,20 @@ var renderCards = function (card) {
   cardElement.querySelector('h4 + p').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
   cardElement.querySelector('.checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
   cardElement.querySelector('.popup__features').insertAdjacentHTML('afterbegin', '<li class="features feature--' + card.offer.features + '"></li>');
+  cardElement.querySelector('.popup__description').textContent = card.offer.description;
 
   return cardElement;
 }
+
+var renderMapPins = function (mapPin) {
+  var pinElement = mapPinTemplate.cloneNode(true);
+
+  pinElement.querySelector('img').src = card.author.avatar;
+  pinElement.querySelector('.map__pin').style.left = mapPin.location.x + 'px';
+  pinElement.querySelector('.map__pin').style.top = mapPin.location.y + 'px';
+
+  return pinElement;
+};
 
 var fragment = document.createDocumentFragment();
 
