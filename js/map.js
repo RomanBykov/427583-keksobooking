@@ -36,6 +36,7 @@ var randomFeatures = function () {
 //   ПРИДУМАТЬ ФУНКЦИЮ ВСТАВКИ ЭЛЕМЕНТОВ ИЗ МАССИВА FEATURES В <li></li>
 // };
 
+//присваиваю русское значение типам жилья
 var getFlatType = function () {
   var flatType = '';
   var randomType = HOUSE_TYPES[randomIndex(0, 3)];
@@ -121,10 +122,10 @@ pins.appendChild(fragmentPins);
 //создайте DOM-элемент объявления, заполните его данными из объекта и вставьте полученный DOM-элемент в блок
 //.map перед блоком .map__filters-container
 
-//получаю содержимое шаблона
+//создайте DOM-элемент объявления
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
-//создайте DOM-элемент объявления, заполните его данными из объекта
+//заполните его данными из объекта
 var renderCards = function (card) {
   var cardElement = cardTemplate.cloneNode(true);
 
