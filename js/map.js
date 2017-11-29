@@ -13,64 +13,67 @@ var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditio
 
 var cards = [];
 
+var pinsAmount = 8;
+
+var commonTemplate = document.querySelector('template');
+
 // общий рандом
-var randomIndex = function (min, max) {
+var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max - min));
 };
 
-// рандом для features
-var randomFeaturesIndex = function () {
-  return Math.floor(Math.random() * FEATURES.length + 1);
-};
-
-// получаю массив features рандомной длины
-var randomFeatures = function () {
-  var featuresList = [];
-  for (var i = 0; i < randomFeaturesIndex(); i++) {
-    featuresList[i] = FEATURES[i];
+var shuffle = function (arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var randomNumber = Math.floor(Math.random() * (i + 1));
+    var temp = arr[i];
+    arr[i] = arr[randomNumber];
+    arr[randomNumber] = temp;
   }
-  return featuresList;
+  return arr;
 };
 
-// var generateFeatures = function () {
-//   ПРИДУМАТЬ ФУНКЦИЮ ВСТАВКИ ЭЛЕМЕНТОВ ИЗ МАССИВА FEATURES В <li></li>
+var features = shuffle(FEATURES).slice(0, getRandomNumber(1, FEATURES.length));
+
+console.log(features);
+
+// var getFeature = function () {
+//   for (var i = 0; i < features.length; i++) {
+//     return '<li class="feature feature--' + features[i] + '"></li>';
+//   }
 // };
+// console.log(getFeature());
 
-// присваиваю русское значение типам жилья
-var getFlatType = function () {
-  var flatType = '';
-  var randomType = HOUSE_TYPES[randomIndex(0, 3)];
+var AppartmentTypes = {
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 
-  if (randomType === 'flat') {
-    flatType = 'Квартира';
-  } else if (randomType === 'house') {
-    flatType = 'Дом';
-  } else if (randomType === 'bungalo') {
-    flatType = 'Бунгало';
-  }
-  return flatType;
+var getAppartmentTypes = function () {
+  var randomType = HOUSE_TYPES[getRandomNumber(0, 3)];
+  return AppartmentTypes [randomType];
 };
 
 // создаю массив 8 карточек
 var generateCards = function () {
-  for (var i = 0; i < 8; i++) {
-    var locationX = randomIndex(300, 900);
-    var locationY = randomIndex(100, 500);
+  for (var i = 0; i < pinsAmount; i++) {
+    var locationX = getRandomNumber(300, 900);
+    var locationY = getRandomNumber(100, 500);
 
     cards[i] = {
       author: {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
       },
       offer: {
-        title: OFFERS_HEADINGS[randomIndex(0, 8)],
+        title: OFFERS_HEADINGS[getRandomNumber(0, 8)],
         address: locationX + ', ' + locationY,
-        price: randomIndex(1000, 1000000),
-        type: getFlatType(randomIndex(0, 3)),
-        rooms: randomIndex(1, 6),
-        guests: randomIndex(1, 15),
-        checkin: CHECKINS[randomIndex(0, 3)],
-        checkout: CHECKINS[randomIndex(0, 3)],
-        features: randomFeatures(),
+        price: getRandomNumber(1000, 1000000),
+        type: getAppartmentTypes(),
+        rooms: getRandomNumber(1, 6),
+        guests: getRandomNumber(1, 15),
+        checkin: CHECKINS[getRandomNumber(0, 3)],
+        checkout: CHECKINS[getRandomNumber(0, 3)],
+        features: features,
         description: '',
         photos: []
       },
@@ -93,7 +96,7 @@ showMap.classList.remove('map--faded');
 //   <img src="{{author.avatar}}" width="40" height="40" draggable="false">
 // </button>
 
-var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+var mapPinTemplate = commonTemplate.content.querySelector('.map__pin');
 
 var renderMapPins = function (mapPin) {
   var pinElement = mapPinTemplate.cloneNode(true);
@@ -123,7 +126,7 @@ pins.appendChild(fragmentPins);
 // .map перед блоком .map__filters-container
 
 // создайте DOM-элемент объявления
-var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
+var cardTemplate = commonTemplate.content.querySelector('.map__card');
 
 // заполните его данными из объекта
 var renderCards = function (card) {
@@ -136,8 +139,8 @@ var renderCards = function (card) {
   cardElement.querySelector('h4 + p').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
   cardElement.querySelector('.checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
   // надо правильно вставить features
-  cardElement.querySelector('.popup__features').insertAdjacentHTML('afterbegin', '<li class="features feature--' + card.offer.features + '"></li>');
-
+  cardElement.querySelector('.popup__features').innerHTML = '';
+  cardElement.querySelector('.popup__features').insertAdjacentHTML('afterbegin', '<li class="feature feature--' + card.offer.features + '"></li>');
   cardElement.querySelector('.popup__description').textContent = card.offer.description;
   cardElement.querySelector('.popup__avatar').src = card.author.avatar;
 
@@ -146,6 +149,6 @@ var renderCards = function (card) {
 
 var fragmentCards = document.createDocumentFragment();
 
-fragmentCards.appendChild(renderCards(cards[0]));
+fragmentCards.appendChild(renderCards(cards[getRandomNumber(0, 8)]));
 // вставьте полученный DOM-элемент в блок .map
 showMap.appendChild(fragmentCards);
