@@ -34,14 +34,9 @@ var shuffle = function (arr) {
 
 var features = shuffle(FEATURES).slice(0, getRandomNumber(1, FEATURES.length));
 
-console.log(features);
-
-// var getFeature = function () {
-//   for (var i = 0; i < features.length; i++) {
-//     return '<li class="feature feature--' + features[i] + '"></li>';
-//   }
-// };
-// console.log(getFeature());
+var getFeatures = function (item) {
+  return '<li class="feature feature--' + item + '"></li>';
+};
 
 var AppartmentTypes = {
   flat: 'Квартира',
@@ -138,9 +133,8 @@ var renderCards = function (card) {
   cardElement.querySelector('h4').textContent = card.offer.type;
   cardElement.querySelector('h4 + p').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
   cardElement.querySelector('.checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
-  // надо правильно вставить features
   cardElement.querySelector('.popup__features').innerHTML = '';
-  cardElement.querySelector('.popup__features').insertAdjacentHTML('afterbegin', '<li class="feature feature--' + card.offer.features + '"></li>');
+  cardElement.querySelector('.popup__features').insertAdjacentHTML('afterbegin', card.offer.features.map(getFeatures).join(' '));
   cardElement.querySelector('.popup__description').textContent = card.offer.description;
   cardElement.querySelector('.popup__avatar').src = card.author.avatar;
 
