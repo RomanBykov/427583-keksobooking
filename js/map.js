@@ -11,11 +11,41 @@ var CHECKINS = ['12:00', '13:00', '14:00'];
 
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
+var ESC_KEY = 27;
+
+var ENTER_KEY = 13;
+
+var SPACE_KEY = 32;
+
 var cards = [];
 
 var pinsAmount = 8;
 
+var fragmentPins = document.createDocumentFragment();
+
+var fragmentCards = document.createDocumentFragment();
+
 var commonTemplate = document.querySelector('template');
+
+var mapPinTemplate = commonTemplate.content.querySelector('.map__pin');
+
+var mapCardTemplate = commonTemplate.content.querySelector('.map__card');
+
+var mapCard = mapCardTemplate.cloneNode(true);
+
+var map = document.querySelector('.map');
+
+var mapPins = map.querySelector('.map__pins');
+
+var mainPin = map.querySelector('.map__pin--main');
+
+var noticeForm = document.querySelector('.notice__form');
+
+var fieldsets = noticeForm.querySelectorAll('fieldset');
+
+var mapFiltersArray = map.querySelectorAll('.map__filter');
+
+var mapCardClose = mapCard.querySelector('.popup__close');
 
 // общий рандом
 var getRandomNumber = function (min, max) {
@@ -49,7 +79,6 @@ var getAppartmentTypes = function () {
   return AppartmentTypes [randomType];
 };
 
-// создаю массив 8 карточек
 var generateCards = function () {
   for (var i = 0; i < pinsAmount; i++) {
     var locationX = getRandomNumber(300, 900);
@@ -81,68 +110,131 @@ var generateCards = function () {
   return cards;
 };
 
-// п.2 У блока .map уберите класс .map--faded
-var showMap = document.querySelector('.map');
-showMap.classList.remove('map--faded');
-
 // п.3 На основе данных, созданных в первом пункте, создайте DOM-элементы, соответствующие меткам на карте,
 // и заполните их данными из массива. Итоговая разметка метки должна выглядеть следующим образом:
 // <button style="left: {{location.x}}px; top: {{location.y}}px;" class="map__pin">
 //   <img src="{{author.avatar}}" width="40" height="40" draggable="false">
 // </button>
 
-var mapPinTemplate = commonTemplate.content.querySelector('.map__pin');
+var renderMapPins = function (pin) {
+  var mapPin = mapPinTemplate.cloneNode(true);
 
-var renderMapPins = function (mapPin) {
-  var pinElement = mapPinTemplate.cloneNode(true);
+  mapPin.style.left = pin.location.x + 'px';
+  mapPin.style.top = pin.location.y + 'px';
+  mapPin.querySelector('img').src = pin.author.avatar;
 
-  pinElement.style.left = mapPin.location.x + 'px';
-  pinElement.style.top = mapPin.location.y + 'px';
-  pinElement.querySelector('img').src = mapPin.author.avatar;
-
-  return pinElement;
+  return mapPin;
 };
 
 // п.4 Отрисуйте сгенерированные DOM-элементы в блок .map__pins. Для вставки элементов используйте DocumentFragment
 cards = generateCards();
 
-var pins = document.querySelector('.map__pins');
-
-var fragmentPins = document.createDocumentFragment();
-
 cards.forEach(function (item) {
   fragmentPins.appendChild(renderMapPins(item));
 });
-
-pins.appendChild(fragmentPins);
 
 // п.5 На основе первого по порядку элемента из сгенерированного массива и шаблона template article.map__card
 // создайте DOM-элемент объявления, заполните его данными из объекта и вставьте полученный DOM-элемент в блок
 // .map перед блоком .map__filters-container
 
-// создайте DOM-элемент объявления
-var cardTemplate = commonTemplate.content.querySelector('.map__card');
 
 // заполните его данными из объекта
 var renderCards = function (card) {
-  var cardElement = cardTemplate.cloneNode(true);
+  mapCard.querySelector('h3').textContent = card.offer.title;
+  mapCard.querySelector('small').textContent = card.offer.address;
+  mapCard.querySelector('.popup__price').innerHTML = card.offer.price + ' &#x20bd;/ночь';
+  mapCard.querySelector('h4').textContent = card.offer.type;
+  mapCard.querySelector('h4 + p').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
+  mapCard.querySelector('.popup__checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
+  mapCard.querySelector('.popup__features').innerHTML = '';
+  mapCard.querySelector('.popup__features').insertAdjacentHTML('afterbegin', card.offer.features.map(getFeatures).join(' '));
+  mapCard.querySelector('.popup__description').textContent = card.offer.description;
+  mapCard.querySelector('.popup__avatar').src = card.author.avatar;
 
-  cardElement.querySelector('h3').textContent = card.offer.title;
-  cardElement.querySelector('small').textContent = card.offer.address;
-  cardElement.querySelector('.popup__price').innerHTML = card.offer.price + ' &#x20bd;/ночь';
-  cardElement.querySelector('h4').textContent = card.offer.type;
-  cardElement.querySelector('h4 + p').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
-  cardElement.querySelector('.checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
-  cardElement.querySelector('.popup__features').innerHTML = '';
-  cardElement.querySelector('.popup__features').insertAdjacentHTML('afterbegin', card.offer.features.map(getFeatures).join(' '));
-  cardElement.querySelector('.popup__description').textContent = card.offer.description;
-  cardElement.querySelector('.popup__avatar').src = card.author.avatar;
-
-  return cardElement;
+  return mapCard;
 };
 
-var fragmentCards = document.createDocumentFragment();
-
 fragmentCards.appendChild(renderCards(cards[getRandomNumber(0, 8)]));
+
 // вставьте полученный DOM-элемент в блок .map
-showMap.appendChild(fragmentCards);
+map.appendChild(fragmentCards);
+
+// В момент открытия, страница должна находиться в следующем состоянии: карта затемнена (добавлен класс map--faded) и
+// форма неактивна (добавлен класс notice__form--disabled и все поля формы недоступны, disabled)
+
+var getStartState = function () {
+  map.classList.add('map--faded');
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].disabled = true;
+  }
+  for (var i = 0; i < mapFiltersArray.length; i++) {
+    mapFiltersArray[i].disabled = true;
+  }
+};
+
+getStartState();
+
+// После того, как на блоке map__pin--main произойдет событие mouseup, форма и карта должны активироваться:
+// У карты убрать класс map--faded
+// Показать на карте метки похожих объявлений, созданные в задании к прошлому разделу
+// У формы убрать класс notice__form--disabled и сделать все поля формы активными
+
+var openMainPin = function () {
+  map.classList.remove('map--faded');
+  mapPins.appendChild(fragmentPins);
+  noticeForm.classList.remove('notice__form--disabled');
+  for (var i = 0; i < fieldsets.length; i++) {
+    fieldsets[i].disabled = false;
+  }
+  for (var i = 0; i < mapFiltersArray.length; i++) {
+    mapFiltersArray[i].disabled = false;
+  }
+};
+
+mainPin.addEventListener('mouseup', openMainPin);
+
+// Первым шагом отключите показ по умолчанию первой карточки из набора объявлений
+mapCard.classList.add('hidden');
+
+// Хотел сделать открытие по спейсу, но почему-то не работает
+// mainPin.addEventListener('keydown', function(evt) {
+//   if (evt.keycode === SPACE_KEY) {
+//     openMainPin();
+//   }
+// });
+
+var popupEscPressHandler = function (evt) {
+  if (evt.keycode === ESC_KEY) {
+    closePopup();
+  }
+};
+
+// Если пин объявления в фокусе .map__pin, то диалог с подробностями должен показываться по нажатию кнопки ENTER
+// Когда диалог открыт, то клавиша ESC должна закрывать диалог и деактивировать элемент .map__pin, который был помечен как активный
+var openPopup = function () {
+  mapCard.classList.remove('hidden');
+  document.addEventListener('keydown', popupEscPressHandler)
+};
+
+var closePopup = function () {
+  mapCard.classList.add('hidden');
+  document.removeEventListener('keydown', popupEscPressHandler);
+};
+
+//При нажатии на элемент .popup__close карточка объявления должна скрываться
+mapCardClose.addEventListener('click', function() {
+  closePopup();
+});
+
+// Если диалог открыт и фокус находится на крестике, то нажатие клавиши ENTER приводит к закрытию диалога
+mapCardClose.addEventListener('keydown', function(evt) {
+  if (evt.keycode === ENTER_KEY) {
+    closePopup();
+  }
+});
+
+
+
+
+
+
