@@ -167,8 +167,8 @@ var getStartState = function () {
   for (var i = 0; i < fieldsets.length; i++) {
     fieldsets[i].disabled = true;
   }
-  for (var i = 0; i < mapFiltersArray.length; i++) {
-    mapFiltersArray[i].disabled = true;
+  for (var j = 0; j < mapFiltersArray.length; j++) {
+    mapFiltersArray[j].disabled = true;
   }
 };
 
@@ -186,8 +186,8 @@ var openMainPin = function () {
   for (var i = 0; i < fieldsets.length; i++) {
     fieldsets[i].disabled = false;
   }
-  for (var i = 0; i < mapFiltersArray.length; i++) {
-    mapFiltersArray[i].disabled = false;
+  for (var j = 0; j < mapFiltersArray.length; j++) {
+    mapFiltersArray[j].disabled = false;
   }
 };
 
@@ -213,7 +213,7 @@ var popupEscPressHandler = function (evt) {
 // Когда диалог открыт, то клавиша ESC должна закрывать диалог и деактивировать элемент .map__pin, который был помечен как активный
 var openPopup = function () {
   mapCard.classList.remove('hidden');
-  document.addEventListener('keydown', popupEscPressHandler)
+  document.addEventListener('keydown', popupEscPressHandler);
 };
 
 var closePopup = function () {
@@ -221,20 +221,14 @@ var closePopup = function () {
   document.removeEventListener('keydown', popupEscPressHandler);
 };
 
-//При нажатии на элемент .popup__close карточка объявления должна скрываться
-mapCardClose.addEventListener('click', function() {
+// При нажатии на элемент .popup__close карточка объявления должна скрываться
+mapCardClose.addEventListener('click', function () {
   closePopup();
 });
 
 // Если диалог открыт и фокус находится на крестике, то нажатие клавиши ENTER приводит к закрытию диалога
-mapCardClose.addEventListener('keydown', function(evt) {
+mapCardClose.addEventListener('keydown', function (evt) {
   if (evt.keycode === ENTER_KEY) {
     closePopup();
   }
 });
-
-
-
-
-
-
