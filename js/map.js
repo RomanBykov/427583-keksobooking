@@ -49,6 +49,8 @@ var mapCardClose = mapCard.querySelector('.popup__close');
 
 var activePin = false;
 
+// ФУНКЦИИ
+
 // общий рандом
 var getRandomNumber = function (min, max) {
   return Math.floor(min + Math.random() * (max - min));
@@ -134,7 +136,6 @@ var renderMapPins = function (pin) {
 // создайте DOM-элемент объявления, заполните его данными из объекта и вставьте полученный DOM-элемент в блок
 // .map перед блоком .map__filters-container
 
-
 // заполните его данными из объекта
 var fillCards = function (card) {
   mapCard.querySelector('.popup__avatar').src = card.author.avatar;
@@ -161,7 +162,7 @@ var getStartState = function () {
   }
 };
 
-var getActiveState = function () {
+var mainPinMouseUpHandler = function () {
   map.classList.remove('map--faded');
   mapPins.appendChild(fragmentPins);
   noticeForm.classList.remove('notice__form--disabled');
@@ -173,59 +174,46 @@ var getActiveState = function () {
   }
 };
 
-var popupEscPressHandler = function (evt) {
-  if (evt.keycode === ESC_KEY) {
-    closePopup();
+var removePinActive = function () {
+  if (activePin !== false) {
+    activePin.classList.remove('map__pin--active');
   }
 };
 
 var openPopup = function () {
   mapCard.classList.remove('hidden');
-  document.addEventListener('keydown', popupEscPressHandler);
+  document.addEventListener('keydown', cardEscKeyDownHandler);
 };
 
 var closePopup = function () {
   mapCard.classList.add('hidden');
-  if (activePin !== false) {
-    activePin.classList.remove('map__pin--active');
-    activePin = false;
-  }
-  document.removeEventListener('keydown', popupEscPressHandler);
+  removePinActive();
+  activePin = false;
+  document.removeEventListener('keydown', cardEscKeyDownHandler);
 };
 
-//блокирую поля и затемняю экран
-getStartState();
+var cardEscKeyDownHandler = function (evt) {
+  if (evt.keyСode === ESC_KEY) {
+    closePopup();
+  }
+};
 
-//генерирую карточки
-cards = generateCards();
+var cardCloseClickHandler = function () {
+  closePopup();
+};
 
-//оборачиваю в DOM-элемент пины
-cards.forEach(function (item) {
-  fragmentPins.appendChild(renderMapPins(item));
-});
+var cardCloseEscKeyDownHandler = function (evt) {
+  if (evt.keyСode === ENTER_KEY) {
+    closePopup();
+  }
+};
 
-//оборачиваю в другой DOM-элемент карточки
-fragmentCards.appendChild(fillCards(cards[getRandomNumber(0, 8)]));
-
-// вставляю полученный DOM-элемент с карточками в блок .map
-map.appendChild(fragmentCards);
-
-// Первым шагом отключите показ по умолчанию первой карточки из набора объявлений
-mapCard.classList.add('hidden');
-
-//ловлю нажатие на главный пин: разблокирую поля, убираю затемнее, отрисовываю пины
-mainPin.addEventListener('mouseup', function () {
-  getActiveState();
-});
-
-mapPins.addEventListener('click', function (evt) {
+var pinClickHandler = function (evt) {
   var target = evt.target;
   var targetId = 0;
   while (target !== mapPins) {
     if (target.tagName === 'BUTTON') {
-      if (activePin !== false) {
-        activePin.classList.remove('map__pin--active');
-      }
+      removePinActive();
       target.classList.add('map__pin--active');
       activePin = target;
       targetId = activePin.id;
@@ -237,16 +225,48 @@ mapPins.addEventListener('click', function (evt) {
     }
     target = target.parentNode;
   }
-});
+};
+
+// СЛУШАТЕЛИ СОБЫТИЙ
+
+// ловлю нажатие на главный пин: разблокирую поля, убираю затемнее, отрисовываю пины
+mainPin.addEventListener('mouseup', mainPinMouseUpHandler);
+
+// не понимаю почему на работает, возможно ловлю не на том элементе
+// пока не заработает, не буду в отдельную функцию выводить
+// mainPin.addEventListener('keydown', function (evt) {
+//   if (evt.keyСode === SPACE_KEY || evt.keyСode === ENTER_KEY) {
+//     mainPinMouseUpHandler();
+//   }
+// });
+
+// ловлю нажатие на один из пинов
+mapPins.addEventListener('click', pinClickHandler);
 
 // При нажатии на элемент .popup__close карточка объявления должна скрываться
-mapCardClose.addEventListener('click', function () {
-  closePopup();
-});
+mapCardClose.addEventListener('click', cardCloseClickHandler);
 
 // Если диалог открыт и фокус находится на крестике, то нажатие клавиши ENTER приводит к закрытию диалога
-mapCardClose.addEventListener('keydown', function (evt) {
-  if (evt.keycode === ENTER_KEY) {
-    closePopup();
-  }
+mapCardClose.addEventListener('keydown', cardCloseEscKeyDownHandler);
+
+// РАБОТА ПРИЛОЖЕНИЯ
+
+// блокирую поля и затемняю экран
+getStartState();
+
+// генерирую карточки
+cards = generateCards();
+
+// оборачиваю в DOM-элемент пины
+cards.forEach(function (item) {
+  fragmentPins.appendChild(renderMapPins(item));
 });
+
+// оборачиваю в другой DOM-элемент карточки
+fragmentCards.appendChild(fillCards(cards[getRandomNumber(0, 8)]));
+
+// вставляю полученный DOM-элемент с карточками в блок .map
+map.appendChild(fragmentCards);
+
+// Первым шагом отключите показ по умолчанию первой карточки из набора объявлений
+mapCard.classList.add('hidden');
