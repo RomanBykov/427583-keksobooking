@@ -152,8 +152,8 @@ var fillCards = function (card) {
   return mapCard;
 };
 
+// блокирую поля
 var getStartState = function () {
-  map.classList.add('map--faded');
   for (var i = 0; i < fieldsets.length; i++) {
     fieldsets[i].disabled = true;
   }
@@ -162,6 +162,7 @@ var getStartState = function () {
   }
 };
 
+// действие при клике на главный пин
 var mainPinMouseUpHandler = function () {
   map.classList.remove('map--faded');
   mapPins.appendChild(fragmentPins);
@@ -174,17 +175,46 @@ var mainPinMouseUpHandler = function () {
   }
 };
 
+// действие при нажатии спэйса или интера на главный пин
+var mainPinKeyDownHandler = function (evt) {
+  if (evt.keyCode === SPACE_KEY || evt.keyCode === ENTER_KEY) {
+    mainPinMouseUpHandler();
+  }
+};
+
+// отключение класса --active
 var removePinActive = function () {
   if (activePin !== false) {
     activePin.classList.remove('map__pin--active');
   }
 };
 
+// закрыть карточку по клику на крест
+var cardCloseClickHandler = function () {
+  closePopup();
+};
+
+// закрыть карточку по эскейпу
+var cardEscKeyDownHandler = function (evt) {
+  if (evt.keyCode === ESC_KEY) {
+    closePopup();
+  }
+};
+
+// закрыть карточку по интеру на крест
+var cardCloseEnterKeyDownHandler = function (evt) {
+  if (evt.keyСode === ENTER_KEY) {
+    closePopup();
+  }
+};
+
+// открыть карточку
 var openPopup = function () {
   mapCard.classList.remove('hidden');
   document.addEventListener('keydown', cardEscKeyDownHandler);
 };
 
+// закрыть карточку
 var closePopup = function () {
   mapCard.classList.add('hidden');
   removePinActive();
@@ -192,22 +222,7 @@ var closePopup = function () {
   document.removeEventListener('keydown', cardEscKeyDownHandler);
 };
 
-var cardEscKeyDownHandler = function (evt) {
-  if (evt.keyСode === ESC_KEY) {
-    closePopup();
-  }
-};
-
-var cardCloseClickHandler = function () {
-  closePopup();
-};
-
-var cardCloseEscKeyDownHandler = function (evt) {
-  if (evt.keyСode === ENTER_KEY) {
-    closePopup();
-  }
-};
-
+// при клике открыть карточку, связать пин с карточкой по id, добавить --active выбранному пину и снять с другого
 var pinClickHandler = function (evt) {
   var target = evt.target;
   var targetId = 0;
@@ -227,31 +242,26 @@ var pinClickHandler = function (evt) {
   }
 };
 
-// СЛУШАТЕЛИ СОБЫТИЙ
+// ПРОСЛУШКА СОБЫТИЙ
 
-// ловлю нажатие на главный пин: разблокирую поля, убираю затемнее, отрисовываю пины
+// ловлю клик на главный пин: разблокирую поля, убираю затемнее, отрисовываю пины
 mainPin.addEventListener('mouseup', mainPinMouseUpHandler);
 
-// не понимаю почему на работает, возможно ловлю не на том элементе
-// пока не заработает, не буду в отдельную функцию выводить
-// mainPin.addEventListener('keydown', function (evt) {
-//   if (evt.keyСode === SPACE_KEY || evt.keyСode === ENTER_KEY) {
-//     mainPinMouseUpHandler();
-//   }
-// });
+// ловлю нажатие на главный пин с клавиатуры
+mainPin.addEventListener('keydown', mainPinKeyDownHandler);
 
-// ловлю нажатие на один из пинов
+// ловлю нажатие на пины
 mapPins.addEventListener('click', pinClickHandler);
 
 // При нажатии на элемент .popup__close карточка объявления должна скрываться
 mapCardClose.addEventListener('click', cardCloseClickHandler);
 
 // Если диалог открыт и фокус находится на крестике, то нажатие клавиши ENTER приводит к закрытию диалога
-mapCardClose.addEventListener('keydown', cardCloseEscKeyDownHandler);
+mapCardClose.addEventListener('keydown', cardCloseEnterKeyDownHandler);
 
 // РАБОТА ПРИЛОЖЕНИЯ
 
-// блокирую поля и затемняю экран
+// блокирую поля
 getStartState();
 
 // генерирую карточки
