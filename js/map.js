@@ -265,7 +265,7 @@ var getValidState = function (item) {
   item.setCustomValidity('');
 };
 
-var titleInvalidHandler = function (evt) {
+var titleInvalidHandler = function (/*evt*/) {
   if (formTitle.validity.tooShort) {
     formTitle.setCustomValidity('Заголовок должен состоять минимум из 30-ти символов');
     getInvalidState(formTitle);
@@ -274,7 +274,7 @@ var titleInvalidHandler = function (evt) {
   }
 };
 
-var priceInvalidHandler = function (evt) {
+var priceInvalidHandler = function (/*evt*/) {
   if (formPrice.validity.valueMissing) {
     formPrice.setCustomValidity('Пожалуйста, укажите стоимость');
     getInvalidState(formPrice);
@@ -283,8 +283,8 @@ var priceInvalidHandler = function (evt) {
   }
 };
 
-var addressInvalidHandler = function (evt) {
-   if (formAddress.validity.tooShort) {
+var addressInvalidHandler = function (/*evt*/) {
+  if (formAddress.validity.tooShort) {
     formAddress.setCustomValidity('Адрес должен состоять минимум из 30-ти символов');
     getInvalidState(formAddress);
   } else {
@@ -292,7 +292,7 @@ var addressInvalidHandler = function (evt) {
   }
 };
 
-var capacityInvalidHandler = function (evt) {
+var capacityInvalidHandler = function (/*evt*/) {
   if (formCapacity.validity.badInput) {
     formCapacity.setCustomValidity('В одной комнате может проживать только один человек');
     getInvalidState(formCapacity);
@@ -300,7 +300,7 @@ var capacityInvalidHandler = function (evt) {
     getValidState(formCapacity);
   }
 };
-//Для Edge
+// Для Edge
 var inputInvalidEdgeHandler = function (evt) {
   var target = evt.target;
   if (target.value.length < 30) {
