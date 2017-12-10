@@ -236,7 +236,7 @@ var getChangePrice = function () {
     }
   };
 };
-
+// сделать перебор в массиве
 var getFormRooms = function () {
   formRooms.onchange = function () {
     switch (formRooms.value) {
@@ -282,7 +282,7 @@ var priceInvalidHandler = function () {
     getValidState(formPrice);
   }
 };
-
+// координаты пина можно указать
 var addressInvalidHandler = function () {
   if (formAddress.validity.tooShort) {
     formAddress.setCustomValidity('Адрес должен состоять минимум из 30-ти символов');
