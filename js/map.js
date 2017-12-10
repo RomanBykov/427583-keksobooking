@@ -25,14 +25,14 @@ var fieldsets = noticeForm.querySelectorAll('fieldset');
 var mapFiltersArray = map.querySelectorAll('.map__filter');
 var mapCardClose = mapCard.querySelector('.popup__close');
 var activePin = false;
-var formAddress = document.getElementById('address');
-var formTitle = document.getElementById('title');
-var formRooms = document.getElementById('room_number');
-var houseTypes = document.getElementById('type');
-var formPrice = document.getElementById('price');
-var formCapacity = document.getElementById('capacity');
-var timeIn = document.getElementById('timein');
-var timeOut = document.getElementById('timeout');
+var formAddress = noticeForm.querySelector('#address');
+var formTitle = noticeForm.querySelector('#title');
+var formRooms = noticeForm.querySelector('#room_number');
+var houseTypes = noticeForm.querySelector('#type');
+var formPrice = noticeForm.querySelector('#price');
+var formCapacity = noticeForm.querySelector('#capacity');
+var timeIn = noticeForm.querySelector('#timein');
+var timeOut = noticeForm.querySelector('#timeout');
 
 // ФУНКЦИИ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -223,34 +223,71 @@ var getChangePrice = function () {
     switch (houseTypes.value) {
       case 'bungalo':
         formPrice.setAttribute('min', '0');
+        formPrice.setAttribute('placeholder', '0');
         break;
       case 'house':
         formPrice.setAttribute('min', '5000');
+        formPrice.setAttribute('placeholder', '5000');
         break;
       case 'palace':
         formPrice.setAttribute('min', '10000');
+        formPrice.setAttribute('placeholder', '10000');
         break;
       case 'flat':
         formPrice.setAttribute('min', '1000');
+        formPrice.setAttribute('placeholder', '1000');
         break;
     }
   };
 };
 // сделать перебор в массиве
 var getFormRooms = function () {
+  for (var i = 0; i < formCapacity.length; i++) {
+    if (formCapacity[i].value !== '1') {
+      formCapacity[i].disabled = true;
+    }
+  }
   formRooms.onchange = function () {
     switch (formRooms.value) {
       case '1':
         formCapacity.value = '1';
+        for (var j = 0; j < formCapacity.length; j++) {
+          if (formCapacity[j].value !== '1') {
+            formCapacity[j].disabled = true;
+          } else {
+            formCapacity[j].disabled = false;
+          }
+        }
         break;
       case '2':
         formCapacity.value = '2';
+        for (var k = 0; k < formCapacity.length; k++) {
+          if (formCapacity[k].value === '1' || formCapacity[k].value === '2') {
+            formCapacity[k].disabled = false;
+          } else {
+            formCapacity[k].disabled = true;
+          }
+        }
         break;
       case '3':
         formCapacity.value = '3';
+        for (var l = 0; l < formCapacity.length; l++) {
+          if (formCapacity[l].value === '0') {
+            formCapacity[l].disabled = true;
+          } else {
+            formCapacity[l].disabled = false;
+          }
+        }
         break;
       case '100':
         formCapacity.value = '0';
+        for (var m = 0; m < formCapacity.length; m++) {
+          if (formCapacity[m].value === '0') {
+            formCapacity[m].disabled = false;
+          } else {
+            formCapacity[m].disabled = true;
+          }
+        }
         break;
     }
   };
@@ -282,15 +319,6 @@ var priceInvalidHandler = function () {
     getValidState(formPrice);
   }
 };
-// координаты пина можно указать
-var addressInvalidHandler = function () {
-  if (formAddress.validity.tooShort) {
-    formAddress.setCustomValidity('Адрес должен состоять минимум из 30-ти символов');
-    getInvalidState(formAddress);
-  } else {
-    getValidState(formAddress);
-  }
-};
 
 var capacityInvalidHandler = function () {
   if (formCapacity.validity.badInput) {
@@ -310,6 +338,13 @@ var inputInvalidEdgeHandler = function (evt) {
   }
 };
 
+var getMainPinLocation = function () {
+  var MAIN_PIN_Y_OFFSET = 16;
+  var mainPinlocationX = parseInt(getComputedStyle(mainPin).getPropertyValue('left'), 10);
+  var mainPinlocationY = parseInt(getComputedStyle(mainPin).getPropertyValue('top'), 10) - MAIN_PIN_Y_OFFSET;
+  return mainPinlocationX + ',' + mainPinlocationY;
+};
+
 // ПРОСЛУШКА СОБЫТИЙ/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // ловлю клик на главный пин: разблокирую поля, убираю затемнее, отрисовываю пины
@@ -326,8 +361,6 @@ mapCardClose.addEventListener('keydown', cardCloseEnterKeyDownHandler);
 formTitle.addEventListener('invalid', titleInvalidHandler);
 formTitle.addEventListener('invalid', inputInvalidEdgeHandler);
 formPrice.addEventListener('invalid', priceInvalidHandler);
-formAddress.addEventListener('invalid', addressInvalidHandler);
-formAddress.addEventListener('invalid', inputInvalidEdgeHandler);
 formCapacity.addEventListener('invalid', capacityInvalidHandler);
 
 // РАБОТА ПРИЛОЖЕНИЯ/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -352,3 +385,6 @@ getChecksChange();
 getChangePrice();
 // связь между количеством комнат и вместимостью
 getFormRooms();
+// в адрес по умолчанию попадает адрес главного пина
+formAddress.value = getMainPinLocation();
+formAddress.placeholder = getMainPinLocation();
