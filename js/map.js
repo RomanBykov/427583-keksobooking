@@ -241,57 +241,7 @@ var getChangePrice = function () {
   };
 };
 // сделать перебор в массиве
-var getFormRooms = function () {
-  for (var i = 0; i < formCapacity.length; i++) {
-    if (formCapacity[i].value !== '1') {
-      formCapacity[i].disabled = true;
-    }
-  }
-  formRooms.onchange = function () {
-    switch (formRooms.value) {
-      case '1':
-        formCapacity.value = '1';
-        for (var j = 0; j < formCapacity.length; j++) {
-          if (formCapacity[j].value !== '1') {
-            formCapacity[j].disabled = true;
-          } else {
-            formCapacity[j].disabled = false;
-          }
-        }
-        break;
-      case '2':
-        formCapacity.value = '2';
-        for (var k = 0; k < formCapacity.length; k++) {
-          if (formCapacity[k].value === '1' || formCapacity[k].value === '2') {
-            formCapacity[k].disabled = false;
-          } else {
-            formCapacity[k].disabled = true;
-          }
-        }
-        break;
-      case '3':
-        formCapacity.value = '3';
-        for (var l = 0; l < formCapacity.length; l++) {
-          if (formCapacity[l].value === '0') {
-            formCapacity[l].disabled = true;
-          } else {
-            formCapacity[l].disabled = false;
-          }
-        }
-        break;
-      case '100':
-        formCapacity.value = '0';
-        for (var m = 0; m < formCapacity.length; m++) {
-          if (formCapacity[m].value === '0') {
-            formCapacity[m].disabled = false;
-          } else {
-            formCapacity[m].disabled = true;
-          }
-        }
-        break;
-    }
-  };
-};
+
 
 var getInvalidState = function (item) {
   item.style.border = '2px solid #FF0000';
@@ -384,7 +334,117 @@ getChecksChange();
 // связь между типом жилища минимальной ценой
 getChangePrice();
 // связь между количеством комнат и вместимостью
-getFormRooms();
+// getFormRooms();
 // в адрес по умолчанию попадает адрес главного пина
 formAddress.value = getMainPinLocation();
 formAddress.placeholder = getMainPinLocation();
+
+// бывший рабочий вариант
+// var getFormRooms = function () {
+//   for (var i = 0; i < formCapacity.length; i++) {
+//     if (formCapacity[i].value !== '1') {
+//       formCapacity[i].disabled = true;
+//     }
+//   }
+//   formRooms.onchange = function () {
+//     switch (formRooms.value) {
+//       case '1':
+//         formCapacity.value = '1';
+//         for (var j = 0; j < formCapacity.length; j++) {
+//           if (formCapacity[j].value !== '1') {
+//             formCapacity[j].disabled = true;
+//           } else {
+//             formCapacity[j].disabled = false;
+//           }
+//         }
+//         break;
+//       case '2':
+//         formCapacity.value = '2';
+//         for (var k = 0; k < formCapacity.length; k++) {
+//           if (formCapacity[k].value === '1' || formCapacity[k].value === '2') {
+//             formCapacity[k].disabled = false;
+//           } else {
+//             formCapacity[k].disabled = true;
+//           }
+//         }
+//         break;
+//       case '3':
+//         formCapacity.value = '3';
+//         for (var l = 0; l < formCapacity.length; l++) {
+//           if (formCapacity[l].value === '0') {
+//             formCapacity[l].disabled = true;
+//           } else {
+//             formCapacity[l].disabled = false;
+//           }
+//         }
+//         break;
+//       case '100':
+//         formCapacity.value = '0';
+//         for (var m = 0; m < formCapacity.length; m++) {
+//           if (formCapacity[m].value === '0') {
+//             formCapacity[m].disabled = false;
+//           } else {
+//             formCapacity[m].disabled = true;
+//           }
+//         }
+//         break;
+//     }
+//   };
+// };
+
+// ищу выбранный элемент списка количества комнат
+var findSelectedOption = function () {
+  var selectedOption = '';
+  for (var i = 0; i < formRooms.length; i++) {
+    if (formRooms[i].selected) {
+      selectedOption = formRooms[i];
+    }
+  }
+  return selectedOption;
+};
+
+
+var setGuestOptions = function () {
+  var selectedOptionValue = findSelectedOption(formRooms).value; // здесь value выбранного элемента списка количества комнат по умолчанию
+  var capacityOptionElements = Array.from(formCapacity); // здесь массивоподобный список вместимостей превращается в настоящий массив
+  capacityOptionElements.forEach(function (option) { // здесь всем элементам списка вместимостей присваивается disabled
+    option.disabled = true;
+  });
+  if (selectedOptionValue === '100') { // дальше, если value выбранного эл-та списка кол-ва комнат = 100
+    capacityOptionElements[3].disabled = false; // то последний элемент списка вместимостей разблокируется
+    capacityOptionElements[3].selected = true; // и становится выбранным
+  } else { // иначе
+    var capacityOptions = capacityOptionElements.slice(1); // копия списка вместимостей, которая равна списку вместимостей, обрезанному на 2-м элементе
+    capacityOptions.length = +selectedOptionValue; // длина нового списка вместимостей увеличивается на ??? на valye выбранного элемента? не понимаю
+    capacityOptions.forEach(function (option) { // здесь снова всем элементам, только уже нового списка вместимостей присваивается disabled
+      option.disabled = false;
+    });
+    capacityOptions[0].selected = true; // а в это время первый элемент нового списка становится выбранным
+  }
+};
+
+var getFormRooms = function () {
+  formRooms.onchange = setGuestOptions();
+};
+
+// getFormRooms();
+
+formRooms.addEventListener('click', getFormRooms);
+
+// Пример от Игоря
+//   var selectedOptionValue = findSelectedOption(roomNumberSelectElement).value;
+//      capacityOptionElements.forEach(function (option) {
+//        option.disabled = true;
+//      });
+//      if (selectedOptionValue === '100') {
+//        capacitySelectElement.options[3].disabled = false;
+//        capacitySelectElement.options[3].selected = true;
+//      } else {
+//        var capacityOptions = capacityOptionElements.slice(1);
+//        capacityOptions.length = +selectedOptionValue;
+//        capacityOptions.forEach(function (option) {
+//          option.disabled = false;
+//        });
+//        capacityOptions[0].selected = true;
+//      }
+//    };
