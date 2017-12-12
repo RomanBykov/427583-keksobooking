@@ -306,7 +306,6 @@ var findSelectedOption = function () {
 
 // чтобы всё заработала как надо, пришлось изменить порядок списка в html-коде на более логичный (изначально было наоборот развернуто)
 var setGuestOptions = function () {
-  debugger;
   // selectedOptionValue = value выбранного элемента списка количества комнат по умолчанию
   var selectedOptionValue = findSelectedOption(formRooms).value;
   // здесь массивоподобный список вместимостей превращается в настоящий массив
