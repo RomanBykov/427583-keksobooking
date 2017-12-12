@@ -242,7 +242,6 @@ var getChangePrice = function () {
 };
 // сделать перебор в массиве
 
-
 var getInvalidState = function (item) {
   item.style.border = '2px solid #FF0000';
 };
@@ -295,6 +294,53 @@ var getMainPinLocation = function () {
   return mainPinlocationX + ',' + mainPinlocationY;
 };
 
+var findSelectedOption = function () {
+  var selectedOption = '';
+  for (var i = 0; i < formRooms.length; i++) {
+    if (formRooms[i].selected) {
+      selectedOption = formRooms[i];
+    }
+  }
+  return selectedOption;
+};
+
+// чтобы всё заработала как надо, пришлось изменить порядок списка в html-коде на более логичный (изначально было наоборот развернуто)
+var setGuestOptions = function () {
+  debugger;
+  // selectedOptionValue = value выбранного элемента списка количества комнат по умолчанию
+  var selectedOptionValue = findSelectedOption(formRooms).value;
+  // здесь массивоподобный список вместимостей превращается в настоящий массив
+  var capacityOptionElements = Array.from(formCapacity);
+  // здесь всем элементам списка вместимостей присваивается disabled
+  capacityOptionElements.forEach(function (option) {
+    option.disabled = true;
+  });
+  // дальше, ЕСЛИ value выбранного эл-та списка кол-ва комнат = 100
+  if (selectedOptionValue === '100') {
+    // то первый элемент массива вместимостей разблокируется
+    capacityOptionElements[0].disabled = false;
+    // и он же становится выбранным
+    capacityOptionElements[0].selected = true;
+    // ИНАЧЕ
+  } else {
+    // копия массива вместимостей, которая = массиву вместимостей, обрезанному на 1-м эл-те с начала
+    // т.е. capacityOptions =  3-м элементам массива, начиная с 2-го
+    // slice: указан только begin, поэтому новый массив начинается с 2-го эл-та и т.к. end не указан, то дальше донорский массив копируется до конца
+    var capacityOptions = capacityOptionElements.slice(1);
+    // длина нового массива = value выбранного эл-та; отсекается с конца, т.е., например, если selected = '2', то capacityOptions = [1, 2]
+    // [0] отрезали в slice, а [3] отрезали сейчас
+    capacityOptions.length = selectedOptionValue;
+    // здесь всем эл-там нового массива снимается disabled
+    capacityOptions.forEach(function (option) {
+      option.disabled = false;
+    });
+  }
+};
+
+var roomsClickHandler = function () {
+  formRooms.onchange = setGuestOptions();
+};
+
 // ПРОСЛУШКА СОБЫТИЙ/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // ловлю клик на главный пин: разблокирую поля, убираю затемнее, отрисовываю пины
@@ -312,6 +358,7 @@ formTitle.addEventListener('invalid', titleInvalidHandler);
 formTitle.addEventListener('invalid', inputInvalidEdgeHandler);
 formPrice.addEventListener('invalid', priceInvalidHandler);
 formCapacity.addEventListener('invalid', capacityInvalidHandler);
+formRooms.addEventListener('click', roomsClickHandler);
 
 // РАБОТА ПРИЛОЖЕНИЯ/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -333,118 +380,6 @@ mapCard.classList.add('hidden');
 getChecksChange();
 // связь между типом жилища минимальной ценой
 getChangePrice();
-// связь между количеством комнат и вместимостью
-// getFormRooms();
 // в адрес по умолчанию попадает адрес главного пина
 formAddress.value = getMainPinLocation();
 formAddress.placeholder = getMainPinLocation();
-
-// бывший рабочий вариант
-// var getFormRooms = function () {
-//   for (var i = 0; i < formCapacity.length; i++) {
-//     if (formCapacity[i].value !== '1') {
-//       formCapacity[i].disabled = true;
-//     }
-//   }
-//   formRooms.onchange = function () {
-//     switch (formRooms.value) {
-//       case '1':
-//         formCapacity.value = '1';
-//         for (var j = 0; j < formCapacity.length; j++) {
-//           if (formCapacity[j].value !== '1') {
-//             formCapacity[j].disabled = true;
-//           } else {
-//             formCapacity[j].disabled = false;
-//           }
-//         }
-//         break;
-//       case '2':
-//         formCapacity.value = '2';
-//         for (var k = 0; k < formCapacity.length; k++) {
-//           if (formCapacity[k].value === '1' || formCapacity[k].value === '2') {
-//             formCapacity[k].disabled = false;
-//           } else {
-//             formCapacity[k].disabled = true;
-//           }
-//         }
-//         break;
-//       case '3':
-//         formCapacity.value = '3';
-//         for (var l = 0; l < formCapacity.length; l++) {
-//           if (formCapacity[l].value === '0') {
-//             formCapacity[l].disabled = true;
-//           } else {
-//             formCapacity[l].disabled = false;
-//           }
-//         }
-//         break;
-//       case '100':
-//         formCapacity.value = '0';
-//         for (var m = 0; m < formCapacity.length; m++) {
-//           if (formCapacity[m].value === '0') {
-//             formCapacity[m].disabled = false;
-//           } else {
-//             formCapacity[m].disabled = true;
-//           }
-//         }
-//         break;
-//     }
-//   };
-// };
-
-// ищу выбранный элемент списка количества комнат
-var findSelectedOption = function () {
-  var selectedOption = '';
-  for (var i = 0; i < formRooms.length; i++) {
-    if (formRooms[i].selected) {
-      selectedOption = formRooms[i];
-    }
-  }
-  return selectedOption;
-};
-
-
-var setGuestOptions = function () {
-  var selectedOptionValue = findSelectedOption(formRooms).value; // здесь value выбранного элемента списка количества комнат по умолчанию
-  var capacityOptionElements = Array.from(formCapacity); // здесь массивоподобный список вместимостей превращается в настоящий массив
-  capacityOptionElements.forEach(function (option) { // здесь всем элементам списка вместимостей присваивается disabled
-    option.disabled = true;
-  });
-  if (selectedOptionValue === '100') { // дальше, если value выбранного эл-та списка кол-ва комнат = 100
-    capacityOptionElements[3].disabled = false; // то последний элемент списка вместимостей разблокируется
-    capacityOptionElements[3].selected = true; // и становится выбранным
-  } else { // иначе
-    var capacityOptions = capacityOptionElements.slice(1); // копия списка вместимостей, которая равна списку вместимостей, обрезанному на 2-м элементе
-    capacityOptions.length = +selectedOptionValue; // длина нового списка вместимостей увеличивается на ??? на valye выбранного элемента? не понимаю
-    capacityOptions.forEach(function (option) { // здесь снова всем элементам, только уже нового списка вместимостей присваивается disabled
-      option.disabled = false;
-    });
-    capacityOptions[0].selected = true; // а в это время первый элемент нового списка становится выбранным
-  }
-};
-
-var getFormRooms = function () {
-  formRooms.onchange = setGuestOptions();
-};
-
-// getFormRooms();
-
-formRooms.addEventListener('click', getFormRooms);
-
-// Пример от Игоря
-//   var selectedOptionValue = findSelectedOption(roomNumberSelectElement).value;
-//      capacityOptionElements.forEach(function (option) {
-//        option.disabled = true;
-//      });
-//      if (selectedOptionValue === '100') {
-//        capacitySelectElement.options[3].disabled = false;
-//        capacitySelectElement.options[3].selected = true;
-//      } else {
-//        var capacityOptions = capacityOptionElements.slice(1);
-//        capacityOptions.length = +selectedOptionValue;
-//        capacityOptions.forEach(function (option) {
-//          option.disabled = false;
-//        });
-//        capacityOptions[0].selected = true;
-//      }
-//    };
