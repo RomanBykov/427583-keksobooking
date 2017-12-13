@@ -33,7 +33,11 @@ var formPrice = noticeForm.querySelector('#price');
 var formCapacity = noticeForm.querySelector('#capacity');
 var timeIn = noticeForm.querySelector('#timein');
 var timeOut = noticeForm.querySelector('#timeout');
-
+var AppartmentTypes = {
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 // ФУНКЦИИ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // общий рандом
@@ -54,12 +58,6 @@ var shuffle = function (arr) {
 var features = shuffle(FEATURES).slice(0, getRandomNumber(1, FEATURES.length));
 var getFeatures = function (item) {
   return '<li class="feature feature--' + item + '"></li>';
-};
-
-var AppartmentTypes = {
-  flat: 'Квартира',
-  house: 'Дом',
-  bungalo: 'Бунгало'
 };
 
 var getAppartmentTypes = function () {
