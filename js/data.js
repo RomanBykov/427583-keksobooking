@@ -19,8 +19,6 @@
     return Math.floor(min + Math.random() * (max - min));
   };
 
-  window.getRandomNumber = getRandomNumber;
-
   var shuffle = function (arr) {
     for (var i = arr.length - 1; i > 0; i--) {
       var randomNumber = Math.floor(Math.random() * (i + 1));
@@ -32,6 +30,9 @@
   };
 
   var features = shuffle(FEATURES).slice(0, getRandomNumber(1, FEATURES.length));
+  var getFeatures = function (item) {
+    return '<li class="feature feature--' + item + '"></li>';
+  };
 
   var getAppartmentTypes = function () {
     var randomType = HOUSE_TYPES[getRandomNumber(0, 3)];
@@ -69,5 +70,7 @@
     return cards;
   };
 
+  window.getRandomNumber = getRandomNumber;
+  window.getFeatures = getFeatures;
   window.generateCards = generateCards;
 })();
