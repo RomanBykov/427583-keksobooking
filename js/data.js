@@ -29,9 +29,8 @@
     return arr;
   };
 
-  var features = shuffle(FEATURES).slice(0, getRandomNumber(1, FEATURES.length));
-  var getFeatures = function (item) {
-    return '<li class="feature feature--' + item + '"></li>';
+  var features = function () {
+    return shuffle(FEATURES).slice(0, getRandomNumber(1, FEATURES.length));
   };
 
   var getAppartmentTypes = function () {
@@ -57,7 +56,7 @@
           guests: getRandomNumber(1, 15),
           checkin: CHECKINS[getRandomNumber(0, 3)],
           checkout: CHECKINS[getRandomNumber(0, 3)],
-          features: features,
+          features: features(),
           description: '',
           photos: []
         },
@@ -71,6 +70,5 @@
   };
 
   window.getRandomNumber = getRandomNumber;
-  window.getFeatures = getFeatures;
   window.generateCards = generateCards;
 })();

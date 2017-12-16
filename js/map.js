@@ -34,18 +34,16 @@
     }
   };
 
+  mapPins.addEventListener('click', window.pinClickHandler);
   mainPin.addEventListener('mouseup', mainPinMouseUpHandler);
   mainPin.addEventListener('keydown', mainPinKeyDownHandler);
 
   window.getStartState();
   cards = window.generateCards();
-  // оборачиваю в DOM-элемент пины
   cards.forEach(function (item) {
     fragmentPins.appendChild(window.renderMapPins(item));
   });
-  // оборачиваю в другой DOM-элемент карточки
   fragmentCards.appendChild(window.fillCards(cards[window.getRandomNumber(0, 8)]));
-  // вставляю полученный DOM-элемент с карточками в блок .map
   map.appendChild(fragmentCards);
   mapCard.classList.add('hidden');
 })();

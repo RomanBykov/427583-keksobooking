@@ -15,6 +15,10 @@
   var mapPins = map.querySelector('.map__pins');
   var mapFiltersArray = map.querySelectorAll('.map__filter');
 
+  var getFeatures = function (item) {
+    return '<li class="feature feature--' + item + '"></li>';
+  };
+
   var fillCards = function (card) {
     mapCard.querySelector('.popup__avatar').src = card.author.avatar;
     mapCard.querySelector('h3').textContent = card.offer.title;
@@ -24,7 +28,7 @@
     mapCard.querySelector('h4 + p').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
     mapCard.querySelector('.popup__checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
     mapCard.querySelector('.popup__features').innerHTML = '';
-    mapCard.querySelector('.popup__features').insertAdjacentHTML('afterbegin', card.offer.features.map(window.getFeatures).join(' '));
+    mapCard.querySelector('.popup__features').insertAdjacentHTML('afterbegin', card.offer.features.map(getFeatures).join(' '));
     mapCard.querySelector('.popup__description').textContent = card.offer.description;
     return mapCard;
   };
@@ -82,7 +86,6 @@
         activePin = target;
         targetId = activePin.id;
         if (!target.classList.contains('map__pin--main')) {
-          // тут спотыкается дебаггер на Cannot read property 'author' of undefined at fillCards (card.js:19)
           fillCards(cards[targetId]);
           openPopup();
         }
@@ -91,8 +94,7 @@
       target = target.parentNode;
     }
   };
-  // debugger;
-  mapPins.addEventListener('click', pinClickHandler);
+
   mapCardClose.addEventListener('click', cardCloseClickHandler);
   mapCardClose.addEventListener('keydown', cardCloseEnterKeyDownHandler);
 
@@ -100,4 +102,7 @@
 
   window.fillCards = fillCards;
   window.getStartState = getStartState;
+  window.pinClickHandler = pinClickHandler;
+
+  cards = window.generateCards();
 })();
