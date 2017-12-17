@@ -69,6 +69,9 @@
     return cards;
   };
 
-  window.getRandomNumber = getRandomNumber;
-  window.generateCards = generateCards;
+  window.data = {
+    getRandomNumber: getRandomNumber,
+    allCards: generateCards()
+  };
+
 })();
