@@ -178,6 +178,7 @@
     }
   };
 
-  bindFormListeners();
   window.setFormAddress = setFormAddress;
+
+  bindFormListeners();
 })();

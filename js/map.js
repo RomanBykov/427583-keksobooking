@@ -21,7 +21,7 @@
   };
 
   var bindMapListeners = function () {
-    mapPins.addEventListener('click', window.card.pinClickHandler);
+    mapPins.addEventListener('click', window.showCard);
     mainPin.addEventListener('mouseup', mainPinMouseUpHandler);
     mainPin.addEventListener('keydown', mainPinKeyDownHandler);
   };
@@ -36,5 +36,4 @@
 
   bindMapListeners();
   fillCardsAndPins();
-  window.card.hideMapCard();
 })();
