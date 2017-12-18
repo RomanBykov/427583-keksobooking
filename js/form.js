@@ -92,7 +92,6 @@
     return mainPinlocationX + ',' + mainPinlocationY;
   };
 
-  // ВОТ ТУТ РЕШЕНИЕ Module5-Task2 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   var mainPinMouseDownHandler = function (evt) {
     evt.preventDefault();
 
@@ -115,7 +114,6 @@
       };
 
       var getMainPinCoordsY = function () {
-        // хотел сначала по умолчанию объявить target = null, но заметил, что при перетаскивании курсор резко дергается, поэтому решил, что лучше какое-нибудь числовое значение
         var point = MAX_Y_COORDS;
         var coordsY = (mainPin.offsetTop - shift.y);
         var maxCoords = MAX_Y_COORDS + MAIN_PIN_Y_OFFSET;
@@ -142,8 +140,6 @@
     document.addEventListener('mousemove', mouseMoveHandler);
     document.addEventListener('mouseup', mouseUpHandler);
   };
-  // ТУТ ОНО ЗАКАНЧИВАЕТСЯ //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
   var setFormAddress = function () {
     formAddress.value = getMainPinLocation();
