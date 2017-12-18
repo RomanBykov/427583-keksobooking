@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+  // выяснил через css, что у всех пинов высота ::after за счет бордеров получается 22px, но у главного пина ::after смещается на -6 вверх, отсюда offset = 16px
+  var MAIN_PIN_Y_OFFSET = 16;
+  var MAX_Y_COORDS = 500;
+  var MIN_Y_COORDS = 100;
+  var MIN_SYMBOLS = 30;
   var noticeForm = document.querySelector('.notice__form');
   var formAddress = noticeForm.querySelector('#address');
   var formTitle = noticeForm.querySelector('#title');
@@ -13,18 +18,16 @@
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
 
-  var getChecksChange = function () {
-    timeIn.onchange = function () {
-      timeOut.selectedIndex = this.selectedIndex;
-    };
-    timeOut.onchange = function () {
-      timeIn.selectedIndex = this.selectedIndex;
-    };
-  };
+  var bindFormListeners = function () {
+    timeIn.addEventListener('change', function (evt) {
+      timeOut.selectedIndex = evt.target.selectedIndex;
+    });
+    timeOut.addEventListener('change', function (evt) {
+      timeIn.selectedIndex = evt.target.selectedIndex;
+    });
 
-  var getChangePrice = function () {
-    houseTypes.onchange = function () {
-      switch (houseTypes.value) {
+    houseTypes.addEventListener('change', function (evt) {
+      switch (evt.currentTarget.value) {
         case 'bungalo':
           formPrice.setAttribute('min', '0');
           formPrice.setAttribute('placeholder', '0');
@@ -42,59 +45,109 @@
           formPrice.setAttribute('placeholder', '1000');
           break;
       }
-    };
-  };
+    });
 
-  var getInvalidState = function (item) {
-    item.style.border = '2px solid #FF0000';
-  };
+    formRooms.addEventListener('change', function () {
+      setGuestOptions();
+    });
 
-  var getValidState = function (item) {
-    item.style.border = 'none';
-    item.setCustomValidity('');
+    formTitle.addEventListener('invalid', titleInvalidHandler);
+    formTitle.addEventListener('invalid', inputInvalidEdgeHandler);
+    formPrice.addEventListener('invalid', priceInvalidHandler);
+    formCapacity.addEventListener('invalid', capacityInvalidHandler);
+    mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
   };
 
   var titleInvalidHandler = function () {
-    if (formTitle.validity.tooShort) {
-      formTitle.setCustomValidity('Заголовок должен состоять минимум из 30-ти символов');
-      getInvalidState(formTitle);
-    } else {
-      getValidState(formTitle);
+    elementInvalidHandler(formTitle, 'tooShort', 'Заголовок должен состоять минимум из 30-ти символов');
+  };
+
+  var elementInvalidHandler = function (element, typeCheck, message) {
+    if (element.validity[typeCheck]) {
+      element.setCustomValidity(message);
+      return window.util.getInvalidState(element);
     }
+    return window.util.getValidState(element);
   };
 
   var priceInvalidHandler = function () {
-    if (formPrice.validity.valueMissing) {
-      formPrice.setCustomValidity('Пожалуйста, укажите стоимость');
-      getInvalidState(formPrice);
-    } else {
-      getValidState(formPrice);
-    }
+    elementInvalidHandler(formPrice, 'valueMissing', 'Пожалуйста, укажите стоимость');
   };
 
   var capacityInvalidHandler = function () {
-    if (formCapacity.validity.badInput) {
-      formCapacity.setCustomValidity('В одной комнате может проживать только один человек');
-      getInvalidState(formCapacity);
-    } else {
-      getValidState(formCapacity);
-    }
+    elementInvalidHandler(formCapacity, 'badInput', 'В одной комнате может проживать только один человек');
   };
   // Для Edge
   var inputInvalidEdgeHandler = function (evt) {
     var target = evt.target;
-    if (target.value.length < 30) {
-      getInvalidState(target);
-    } else {
-      getValidState(target);
+    if (target.value.length < MIN_SYMBOLS) {
+      return window.util.getInvalidState(target);
     }
+    return window.util.getValidState(target);
   };
 
   var getMainPinLocation = function () {
-    var MAIN_PIN_Y_OFFSET = 16;
     var mainPinlocationX = parseInt(getComputedStyle(mainPin).getPropertyValue('left'), 10);
     var mainPinlocationY = parseInt(getComputedStyle(mainPin).getPropertyValue('top'), 10) - MAIN_PIN_Y_OFFSET;
     return mainPinlocationX + ',' + mainPinlocationY;
+  };
+
+  // ВОТ ТУТ РЕШЕНИЕ Module5-Task2 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  var mainPinMouseDownHandler = function (evt) {
+    evt.preventDefault();
+
+    var startCoords = {
+      x: evt.clientx,
+      y: evt.clientY
+    };
+
+    var mouseMoveHandler = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      var getMainPinCoordsY = function () {
+        // хотел сначала по умолчанию объявить target = null, но заметил, что при перетаскивании курсор резко дергается, поэтому решил, что лучше какое-нибудь числовое значение
+        var point = MAX_Y_COORDS;
+        var coordsY = (mainPin.offsetTop - shift.y);
+        var maxCoords = MAX_Y_COORDS + MAIN_PIN_Y_OFFSET;
+        var minCoords = MIN_Y_COORDS + MAIN_PIN_Y_OFFSET;
+
+        if (coordsY <= maxCoords && coordsY >= minCoords) {
+          point = coordsY;
+        }
+        return point;
+      };
+
+      mainPin.style.top = getMainPinCoordsY() + 'px';
+      mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+    };
+
+    var mouseUpHandler = function (upEvt) {
+      upEvt.preventDefault();
+      setFormAddress();
+
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
+    };
+
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
+  };
+  // ТУТ ОНО ЗАКАНЧИВАЕТСЯ //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  var setFormAddress = function () {
+    formAddress.value = getMainPinLocation();
+    formAddress.placeholder = getMainPinLocation();
   };
 
   var findSelectedOption = function () {
@@ -125,18 +178,6 @@
     }
   };
 
-  var roomsClickHandler = function () {
-    formRooms.onchange = setGuestOptions();
-  };
-
-  formTitle.addEventListener('invalid', titleInvalidHandler);
-  formTitle.addEventListener('invalid', inputInvalidEdgeHandler);
-  formPrice.addEventListener('invalid', priceInvalidHandler);
-  formCapacity.addEventListener('invalid', capacityInvalidHandler);
-  formRooms.addEventListener('click', roomsClickHandler);
-
-  getChecksChange();
-  getChangePrice();
-  formAddress.value = getMainPinLocation();
-  formAddress.placeholder = getMainPinLocation();
+  bindFormListeners();
+  window.setFormAddress = setFormAddress;
 })();
