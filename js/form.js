@@ -24,7 +24,7 @@
     itemOut.selectedIndex = itemIn.selectedIndex;
   };
 
-  var syncValueWithMin  = function (itemIn, itemOut) {
+  var syncValueWithMin = function (itemIn, itemOut) {
     itemOut.min = pricesList[itemIn.selectedIndex];
     itemOut.placeholder = pricesList[itemIn.selectedIndex];
   };
