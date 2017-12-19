@@ -30,7 +30,7 @@
     window.data.allCards.forEach(function (item) {
       fragmentPins.appendChild(window.renderMapPins(item));
     });
-    fragmentCards.appendChild(window.card.fillCards(window.data.allCards[window.data.getRandomNumber(0, 8)]));
+    fragmentCards.appendChild(window.card.fillCards(window.data.allCards[window.util.getRandomNumber(0, 8)]));
     map.appendChild(fragmentCards);
   };
 

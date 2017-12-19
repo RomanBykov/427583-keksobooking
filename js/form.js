@@ -10,50 +10,45 @@
   var formAddress = noticeForm.querySelector('#address');
   var formTitle = noticeForm.querySelector('#title');
   var formRooms = noticeForm.querySelector('#room_number');
-  var houseTypes = noticeForm.querySelector('#type');
-  var formPrice = noticeForm.querySelector('#price');
+  var apartmentType = noticeForm.querySelector('#type');
+  var pricePerNight = noticeForm.querySelector('#price');
   var formCapacity = noticeForm.querySelector('#capacity');
   var timeIn = noticeForm.querySelector('#timein');
   var timeOut = noticeForm.querySelector('#timeout');
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
+  var pricesList = window.data.prices;
+
+  // ЗДЕСЬ НАЧИНАЕТСЯ 6-1
+  var syncTimes = function (itemIn, itemOut) {
+    itemOut.selectedIndex = itemIn.selectedIndex;
+  };
+
+  var syncValueWithMin  = function (itemIn, itemOut) {
+    itemOut.min = pricesList[itemIn.selectedIndex];
+    itemOut.placeholder = pricesList[itemIn.selectedIndex];
+  };
 
   var bindFormListeners = function () {
-    timeIn.addEventListener('change', function (evt) {
-      timeOut.selectedIndex = evt.target.selectedIndex;
-    });
-    timeOut.addEventListener('change', function (evt) {
-      timeIn.selectedIndex = evt.target.selectedIndex;
+    timeIn.addEventListener('change', function () {
+      window.synchronizeFields(timeIn, timeOut, syncTimes);
     });
 
-    houseTypes.addEventListener('change', function (evt) {
-      switch (evt.currentTarget.value) {
-        case 'bungalo':
-          formPrice.setAttribute('min', '0');
-          formPrice.setAttribute('placeholder', '0');
-          break;
-        case 'house':
-          formPrice.setAttribute('min', '5000');
-          formPrice.setAttribute('placeholder', '5000');
-          break;
-        case 'palace':
-          formPrice.setAttribute('min', '10000');
-          formPrice.setAttribute('placeholder', '10000');
-          break;
-        case 'flat':
-          formPrice.setAttribute('min', '1000');
-          formPrice.setAttribute('placeholder', '1000');
-          break;
-      }
+    timeOut.addEventListener('change', function () {
+      window.synchronizeFields(timeOut, timeIn, syncTimes);
     });
 
+    apartmentType.addEventListener('change', function () {
+      window.synchronizeFields(apartmentType, pricePerNight, syncValueWithMin);
+    });
+    // ЗДЕСЬ КОНЧАЕТСЯ 6-1
     formRooms.addEventListener('change', function () {
       setGuestOptions();
     });
 
     formTitle.addEventListener('invalid', titleInvalidHandler);
     formTitle.addEventListener('invalid', inputInvalidEdgeHandler);
-    formPrice.addEventListener('invalid', priceInvalidHandler);
+    pricePerNight.addEventListener('invalid', priceInvalidHandler);
     formCapacity.addEventListener('invalid', capacityInvalidHandler);
     mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
   };
@@ -71,7 +66,7 @@
   };
 
   var priceInvalidHandler = function () {
-    elementInvalidHandler(formPrice, 'valueMissing', 'Пожалуйста, укажите стоимость');
+    elementInvalidHandler(pricePerNight, 'valueMissing', 'Пожалуйста, укажите стоимость');
   };
 
   var capacityInvalidHandler = function () {

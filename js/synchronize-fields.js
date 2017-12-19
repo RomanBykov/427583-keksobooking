@@ -1,9 +1,9 @@
 'use strict';
 
 (function () {
-  var synchronizeFields = function (itemIn, itemOut, arrIn, arrOut, callback) {
+  var synchronizeFields = function (itemIn, itemOut, callback) {
     if (typeof callback === 'function') {
-      callback();
+      callback(itemIn, itemOut);
     }
   };
 
