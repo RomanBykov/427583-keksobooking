@@ -2,6 +2,9 @@
 
 (function () {
   var activePin = false;
+  // var commonTemplate = document.querySelector('template').content;
+  // var mapCardTemplate = commonTemplate.querySelector('.map__card');
+  // var mapCard = mapCardTemplate.cloneNode(true);
   var mapCard = window.card.mapCard;
   var mapCardClose = mapCard.querySelector('.popup__close');
   var map = document.querySelector('.map');
@@ -37,7 +40,8 @@
     document.removeEventListener('keydown', cardEscKeyDownHandler);
   };
 
-  var showCard = function (evt) {
+  var showCard = function (evt, cards) {
+    // debugger;
     var target = evt.target;
     var targetId = 0;
     while (target !== mapPins) {
@@ -45,9 +49,9 @@
         removePinActive();
         target.classList.add('map__pin--active');
         activePin = target;
-        targetId = activePin.id;
+        targetId = activePin.dataset.id;
         if (!target.classList.contains('map__pin--main')) {
-          window.card.fillCards(window.data.allCards[targetId]);
+          window.card.fillCards(cards[targetId]);
           openPopup();
         }
         return;

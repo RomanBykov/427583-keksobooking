@@ -9,7 +9,12 @@
     return '<li class="feature feature--' + item + '"></li>';
   };
 
+  // var getPhotos = function (item) {
+  //   return '<li><img src="' + item + '"></li>';
+  // };
+
   var fillCards = function (card) {
+    // var mapCard = mapCardTemplate.cloneNode(true);
     mapCard.querySelector('.popup__avatar').src = card.author.avatar;
     mapCard.querySelector('h3').textContent = card.offer.title;
     mapCard.querySelector('small').textContent = card.offer.address;
@@ -20,7 +25,8 @@
     mapCard.querySelector('.popup__features').innerHTML = '';
     mapCard.querySelector('.popup__features').insertAdjacentHTML('afterbegin', card.offer.features.map(getFeatures).join(' '));
     mapCard.querySelector('.popup__description').textContent = card.offer.description;
-    mapCard.querySelector('.popup__pictures').innerHTML = '';
+    // mapCard.querySelector('.popup__pictures').innerHTML = '';
+    // mapCard.querySelector('.popup__pictures').insertAdjacentHTML('afterbegin', card.offer.photos.map(getPhotos).join(''));
     return mapCard;
   };
 

@@ -26,14 +26,25 @@
     mainPin.addEventListener('keydown', mainPinKeyDownHandler);
   };
 
-  var fillCardsAndPins = function () {
-    window.data.allCards.forEach(function (item) {
-      fragmentPins.appendChild(window.renderMapPins(item));
+  // var fillCardsAndPins = function () {
+  //   window.data.allCards.forEach(function (item) {
+  //     fragmentPins.appendChild(window.renderMapPins(item));
+  //   });
+  //   fragmentCards.appendChild(window.card.fillCards(window.data.allCards[window.util.getRandomNumber(0, 8)]));
+  //   map.appendChild(fragmentCards);
+  // };
+
+  window.backend.load(function (cardsArr) {
+    cardsArr.forEach(function (item, i) {
+      fragmentPins.appendChild(window.renderMapPins(item, i));
+      // debugger;
     });
-    fragmentCards.appendChild(window.card.fillCards(window.data.allCards[window.util.getRandomNumber(0, 8)]));
-    map.appendChild(fragmentCards);
-  };
+    cardsArr.forEach(function (elem) {
+      fragmentCards.appendChild(window.card.fillCards(elem));
+    });
+  });
+  map.appendChild(fragmentCards);
 
   bindMapListeners();
-  fillCardsAndPins();
+  // fillCardsAndPins();
 })();
