@@ -14,7 +14,6 @@
   // };
 
   var fillCards = function (card) {
-    // var mapCard = mapCardTemplate.cloneNode(true);
     mapCard.querySelector('.popup__avatar').src = card.author.avatar;
     mapCard.querySelector('h3').textContent = card.offer.title;
     mapCard.querySelector('small').textContent = card.offer.address;

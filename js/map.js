@@ -26,25 +26,25 @@
     mainPin.addEventListener('keydown', mainPinKeyDownHandler);
   };
 
-  // var fillCardsAndPins = function () {
-  //   window.data.allCards.forEach(function (item) {
-  //     fragmentPins.appendChild(window.renderMapPins(item));
-  //   });
-  //   fragmentCards.appendChild(window.card.fillCards(window.data.allCards[window.util.getRandomNumber(0, 8)]));
-  //   map.appendChild(fragmentCards);
-  // };
+  var cards = [];
 
-  window.backend.load(function (cardsArr) {
-    cardsArr.forEach(function (item, i) {
-      fragmentPins.appendChild(window.renderMapPins(item, i));
-      // debugger;
+  debugger;
+  var fillCardsAndPins = function () { //ПОЧЕМУ ФУНКЦИЯ ВМЕСТО РАБОТЫ СНАЧАЛА ПРОСКАКИВАЕТ НЕВЫПОЛЕНННОЙ, А ПОТОМ ПОСЛЕ ПРОХОДА ПО ВСЕМ МОДУЛЯМ ВОЗВРАЩАЕТСЯ И НАКОНЕЦ ДЕЛАЕТ СВОЮ ЧЕРТОВУ РАБОТУ?!!!!!ааааааё!!
+    debugger;
+    window.backend.load(function (cardsData) {
+      debugger;
+      cards = cardsData.slice();
+      cards.forEach(function (item, i) {
+        debugger;
+        fragmentPins.appendChild(window.renderMapPins(item, i));
+      });
+      debugger;
+      fragmentCards.appendChild(window.card.fillCards(cards[0]));
+      map.appendChild(fragmentCards);
     });
-    cardsArr.forEach(function (elem) {
-      fragmentCards.appendChild(window.card.fillCards(elem));
-    });
-  });
-  map.appendChild(fragmentCards);
+  };
 
+  window.cards = cards;
   bindMapListeners();
-  // fillCardsAndPins();
+  fillCardsAndPins();
 })();

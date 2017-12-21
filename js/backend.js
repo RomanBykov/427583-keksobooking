@@ -9,7 +9,6 @@
       xhr.responseType = 'json';
       xhr.open('GET', URL_LOAD);
       xhr.addEventListener('load', function () {
-        console.log(xhr.response);
         onSuccess(xhr.response);
       });
       xhr.send();

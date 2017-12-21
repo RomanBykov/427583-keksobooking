@@ -2,14 +2,14 @@
 
 (function () {
   // var OFFERS_HEADINGS = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец',
-  //   'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря',
-  //   'Неуютное бунгало по колено в воде'];
+  // 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря',
+  // 'Неуютное бунгало по колено в воде'];
   // var HOUSE_TYPES = ['flat', 'house', 'bungalo', 'palace'];
   // var CHECKINS = ['12:00', '13:00', '14:00'];
   // var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   // var PINS_AMOUNT = 8;
   var PRICES = ['1000', '0', '5000', '10000'];
-  // var cards = [];
+
   // var apartmentTypes = {
   //   flat: 'Квартира',
   //   house: 'Дом',
@@ -57,8 +57,14 @@
   //   return cards;
   // };
 
+  // var cards = [];
+  // window.backend.load(function (cardsData) {
+  //   debugger;
+  //   cards = cardsData.slice();
+  // });
+
   window.data = {
-    // allCards: generateCards(),
+    // allCards: cards,
     prices: PRICES.slice()
   };
 

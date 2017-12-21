@@ -40,8 +40,7 @@
     document.removeEventListener('keydown', cardEscKeyDownHandler);
   };
 
-  var showCard = function (evt, cards) {
-    // debugger;
+  var showCard = function (evt) {
     var target = evt.target;
     var targetId = 0;
     while (target !== mapPins) {
@@ -51,7 +50,8 @@
         activePin = target;
         targetId = activePin.dataset.id;
         if (!target.classList.contains('map__pin--main')) {
-          window.card.fillCards(cards[targetId]);
+          // debugger;
+          window.card.fillCards(window.cards[targetId]);
           openPopup();
         }
         return;
