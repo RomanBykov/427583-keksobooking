@@ -26,25 +26,21 @@
     mainPin.addEventListener('keydown', mainPinKeyDownHandler);
   };
 
-  var cards = [];
-
-  debugger;
-  var fillCardsAndPins = function () { //ПОЧЕМУ ФУНКЦИЯ ВМЕСТО РАБОТЫ СНАЧАЛА ПРОСКАКИВАЕТ НЕВЫПОЛЕНННОЙ, А ПОТОМ ПОСЛЕ ПРОХОДА ПО ВСЕМ МОДУЛЯМ ВОЗВРАЩАЕТСЯ И НАКОНЕЦ ДЕЛАЕТ СВОЮ ЧЕРТОВУ РАБОТУ?!!!!!ааааааё!!
-    debugger;
+  var fillCardsAndPins = function () {
+    // debugger;
     window.backend.load(function (cardsData) {
-      debugger;
-      cards = cardsData.slice();
-      cards.forEach(function (item, i) {
-        debugger;
+      window.cards = cardsData;
+
+      cardsData.forEach(function (item, i) {
         fragmentPins.appendChild(window.renderMapPins(item, i));
       });
-      debugger;
-      fragmentCards.appendChild(window.card.fillCards(cards[0]));
+
+      fragmentCards.appendChild(window.card.fillCards(window.cards[0]));
       map.appendChild(fragmentCards);
-    });
+    }, window.backend.errorHandler);
   };
 
-  window.cards = cards;
+
   bindMapListeners();
   fillCardsAndPins();
 })();

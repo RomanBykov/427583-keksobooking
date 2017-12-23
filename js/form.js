@@ -1,11 +1,11 @@
 'use strict';
 
 (function () {
-  // выяснил через css, что у всех пинов высота ::after за счет бордеров получается 22px, но у главного пина ::after смещается на -6 вверх, отсюда offset = 16px
   var MAIN_PIN_Y_OFFSET = 16;
   var MAX_Y_COORDS = 500;
   var MIN_Y_COORDS = 100;
   var MIN_SYMBOLS = 30;
+  var PRICES = ['1000', '0', '5000', '10000'];
   var noticeForm = document.querySelector('.notice__form');
   var formAddress = noticeForm.querySelector('#address');
   var formTitle = noticeForm.querySelector('#title');
@@ -17,9 +17,8 @@
   var timeOut = noticeForm.querySelector('#timeout');
   var map = document.querySelector('.map');
   var mainPin = map.querySelector('.map__pin--main');
-  var pricesList = window.data.prices;
+  var pricesList = PRICES.slice();
 
-  // ЗДЕСЬ НАЧИНАЕТСЯ 6-1
   var syncTimes = function (itemIn, itemOut) {
     itemOut.selectedIndex = itemIn.selectedIndex;
   };
@@ -29,7 +28,26 @@
     itemOut.placeholder = pricesList[itemIn.selectedIndex];
   };
 
+  var setFormToDefault = function () {
+    formTitle.value = 'Милая, уютная квартирка в центре Токио';
+    formAddress.value = getMainPinLocation();
+    apartmentType.value = 'flat';
+    pricePerNight.value = '5000';
+    formRooms.value = '1';
+    formCapacity.value = '1';
+    timeIn.value = '12:00';
+    timeOut.value = '12:00';
+  };
+
+  var formSubmitHandler = function (evt) {
+    window.backend.upload(new FormData(noticeForm), setFormToDefault, window.backend.errorHandler);
+    evt.preventDefault();
+  };
+
   var bindFormListeners = function () {
+
+    noticeForm.addEventListener('submit', formSubmitHandler);
+
     timeIn.addEventListener('change', function () {
       window.synchronizeFields(timeIn, timeOut, syncTimes);
     });
@@ -41,7 +59,7 @@
     apartmentType.addEventListener('change', function () {
       window.synchronizeFields(apartmentType, pricePerNight, syncValueWithMin);
     });
-    // ЗДЕСЬ КОНЧАЕТСЯ 6-1
+
     formRooms.addEventListener('change', function () {
       setGuestOptions();
     });

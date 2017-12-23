@@ -445,11 +445,23 @@ textarea:focus
     margin-bottom: .3em;
 }
 
+.popup__pictures
+{
+    display: flex;
+}
+
 .popup__pictures li
 {
+    margin: 0 2.5px;
     display: inline-block;
 
     vertical-align: middle;
+}
+
+.popup__pictures li img
+{
+    width: 100%;
+    height: auto;
 }
 
 .popup__avatar
