@@ -39,11 +39,11 @@
     formCapacity.value = '1';
     timeIn.value = '12:00';
     timeOut.value = '12:00';
-    window.backend.removeError();
+    window.error.removeError();
   };
 
   var formSubmitHandler = function (evt) {
-    window.backend.upload(new FormData(noticeForm), setFormToDefault, window.backend.errorHandler);
+    window.backend.upload(new FormData(noticeForm), setFormToDefault, window.error.errorHandler);
     evt.preventDefault();
   };
 

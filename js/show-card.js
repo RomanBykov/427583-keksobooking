@@ -47,7 +47,7 @@
         activePin = target;
         targetId = activePin.dataset.id;
         if (!target.classList.contains('map__pin--main')) {
-          window.card.fillCards(window.cards[targetId]);
+          window.card.fillCards(window.card.allCards[targetId]);
           open();
         }
         return;

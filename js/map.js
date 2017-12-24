@@ -27,17 +27,16 @@
   };
 
   var fillCardsAndPins = function () {
-    // debugger;
     window.backend.load(function (cardsData) {
-      window.cards = cardsData;
+      window.card.allCards = cardsData;
 
-      cardsData.forEach(function (item, i) {
+      window.card.allCards.forEach(function (item, i) {
         fragmentPins.appendChild(window.renderMapPins(item, i));
       });
 
-      fragmentCards.appendChild(window.card.fillCards(window.cards[0]));
+      fragmentCards.appendChild(window.card.fillCards(window.card.allCards[0]));
       map.appendChild(fragmentCards);
-    }, window.backend.errorHandler);
+    }, window.error.errorHandler);
   };
 
 
