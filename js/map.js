@@ -27,12 +27,19 @@
   };
 
   var fillCardsAndPins = function () {
-    window.data.allCards.forEach(function (item) {
-      fragmentPins.appendChild(window.renderMapPins(item));
-    });
-    fragmentCards.appendChild(window.card.fillCards(window.data.allCards[window.util.getRandomNumber(0, 8)]));
-    map.appendChild(fragmentCards);
+    // debugger;
+    window.backend.load(function (cardsData) {
+      window.cards = cardsData;
+
+      cardsData.forEach(function (item, i) {
+        fragmentPins.appendChild(window.renderMapPins(item, i));
+      });
+
+      fragmentCards.appendChild(window.card.fillCards(window.cards[0]));
+      map.appendChild(fragmentCards);
+    }, window.backend.errorHandler);
   };
+
 
   bindMapListeners();
   fillCardsAndPins();
