@@ -29,14 +29,17 @@
   };
 
   var setFormToDefault = function () {
-    formTitle.value = 'Милая, уютная квартирка в центре Токио';
-    formAddress.value = getMainPinLocation();
+    formTitle.value = '';
+    formTitle.placeholder = 'Милая, уютная квартирка в центре Токио';
+    formAddress.value = '';
+    formAddress.placeholder = '';
     apartmentType.value = 'flat';
     pricePerNight.value = '5000';
     formRooms.value = '1';
     formCapacity.value = '1';
     timeIn.value = '12:00';
     timeOut.value = '12:00';
+    window.backend.removeError();
   };
 
   var formSubmitHandler = function (evt) {
