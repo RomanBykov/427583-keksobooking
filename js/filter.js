@@ -3,24 +3,30 @@
 (function () {
   var mapFilter = document.querySelector('.map__filters-container');
   var filterType = mapFilter.querySelector('#housing-type');
-  var arr = [];
-  var pinsArr = [];
 
-  var filterFunc = function () {
-    pinsArr = document.querySelectorAll('.map__pin');
-    arr = [].map.call(pinsArr, function (it) {
+  var getPinsArray = function () {
+    var allPins = document.querySelectorAll('.map__pin');
+    var array = [].map.call(allPins, function (it) {
       return it;
     });
-    arr.shift();
-    console.log(arr);
+    array.shift();
+    return array;
+  };
+
+  var filterTypeChangeHandler = function (filter) {
+    var pinsArray = getPinsArray();
     window.card.allCards.forEach(function (item, i) {
-      if (item.offer.type === filterType.value) {
-        return arr[i].classList.add('hidden');
+      if (filter.value === 'any') {
+        return pinsArray[i].classList.remove('hidden');
+      } else if (item.offer.type !== filter.value) { // не знаю как передать offer.type через переменную, чтобы сделать всю функцию универсальной
+        return pinsArray[i].classList.add('hidden');
       }
-      return arr[i].classList.remove('hidden');
+      return pinsArray[i].classList.remove('hidden');
     });
   };
 
-  filterType.addEventListener('change', filterFunc);
+  filterType.addEventListener('change', function () {
+    filterTypeChangeHandler(filterType);
+  });
 
 })();
