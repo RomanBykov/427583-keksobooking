@@ -6,7 +6,7 @@
   var arr = [];
   var pinsArr = [];
 
-  filterType.addEventListener('change', function () {
+  var filterFunc = function () {
     pinsArr = document.querySelectorAll('.map__pin');
     arr = [].map.call(pinsArr, function (it) {
       return it;
@@ -14,11 +14,13 @@
     arr.shift();
     console.log(arr);
     window.card.allCards.forEach(function (item, i) {
-      if (item.offer.type !== 'flat') {
+      if (item.offer.type === filterType.value) {
         return arr[i].classList.add('hidden');
       }
       return arr[i].classList.remove('hidden');
     });
-  });
+  };
+
+  filterType.addEventListener('change', filterFunc);
 
 })();
