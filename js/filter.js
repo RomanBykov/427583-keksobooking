@@ -1,32 +1,56 @@
 'use strict';
 
 (function () {
-  var mapFilter = document.querySelector('.map__filters-container');
-  var filterType = mapFilter.querySelector('#housing-type');
-
-  var getPinsArray = function () {
-    var allPins = document.querySelectorAll('.map__pin');
-    var array = [].map.call(allPins, function (it) {
-      return it;
-    });
-    array.shift();
-    return array;
+  var mapFilters = document.querySelector('.map__filters-container');
+  var featuresFilters = mapFilters.querySelectorAll('[name="features"]');
+  var typeFilter = mapFilters.querySelector('#housing-type');
+  var priceFilter = mapFilters.querySelector('#housing-price');
+  var roomsFilter = mapFilters.querySelector('#housing-rooms');
+  var guestsFilter = mapFilters.querySelector('#housing-guests');
+  var priceRange = {
+    MIN: 10000,
+    MAX: 50000
   };
 
-  var filterTypeChangeHandler = function (filter) {
-    var pinsArray = getPinsArray();
-    window.card.allCards.forEach(function (item, i) {
-      if (filter.value === 'any') {
-        return pinsArray[i].classList.remove('hidden');
-      } else if (item.offer.type !== filter.value) { // не знаю как передать offer.type через переменную, чтобы сделать всю функцию универсальной
-        return pinsArray[i].classList.add('hidden');
-      }
-      return pinsArray[i].classList.remove('hidden');
-    });
+  var filterValue = function (field, filter) {
+    return function (data) {
+      var condition = (data.offer[field]).toString(10) === filter.value;
+      return filter.value === 'any' ? true : condition;
+    };
   };
 
-  filterType.addEventListener('change', function () {
-    filterTypeChangeHandler(filterType);
-  });
+  var isTypeFit = filterValue('type', typeFilter);
+  var isRoomsFit = filterValue('rooms', roomsFilter);
+  var isGuestsFit = filterValue('guests', guestsFilter);
+
+  var isPriceFit = function (data) {
+    var condition = {
+      high: data.offer.price >= priceRange.MAX,
+      middle: data.offer.price >= priceRange.MIN && data.offer.price < priceRange.MAX,
+      low: data.offer.price < priceRange.MIN
+    };
+    return priceFilter.value === 'any' ? true : condition[priceFilter.value];
+  };
+
+  var isFeaturesFit = function (data) {
+    var checkedFeatures = Array.prototype.slice.call(featuresFilters, 0).filter(function (feature) {
+      return feature.checked;
+    });
+    return checkedFeatures.every(function (feature) {
+      return data.offer.features.indexOf(feature.value) >= 0;
+    });
+  };
+  var filters = [isTypeFit, isRoomsFit, isGuestsFit, isPriceFit, isFeaturesFit];
+
+  var filterData = function (data) {
+    var filterCallback = function (dataItem) {
+      return filters.every(function (filterCheck) {
+        return filterCheck(dataItem);
+      });
+    };
+    return data.slice().filter(filterCallback);
+  };
+
+  window.filterData = filterData;
 
 })();
