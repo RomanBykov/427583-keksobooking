@@ -13,6 +13,13 @@
     return '<li><img src="' + item + '"></li>';
   };
 
+  var AppartmentTypes = {
+    flat: 'Квартира',
+    bungalo: 'Лачуга',
+    house: 'Дом',
+    palace: 'Дворец'
+  };
+
   var fillCards = function (card) {
     var mapCardPictures = mapCard.querySelector('.popup__pictures');
     var mapCardFeatures = mapCard.querySelector('.popup__features');
@@ -20,7 +27,7 @@
     mapCard.querySelector('h3').textContent = card.offer.title;
     mapCard.querySelector('small').textContent = card.offer.address;
     mapCard.querySelector('.popup__price').innerHTML = card.offer.price + ' &#x20bd;/ночь';
-    mapCard.querySelector('h4').textContent = card.offer.type;
+    mapCard.querySelector('h4').textContent = AppartmentTypes[card.offer.type];
     mapCard.querySelector('h4 + p').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
     mapCard.querySelector('.popup__checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
     mapCard.querySelector('.popup__description').textContent = card.offer.description;
@@ -40,6 +47,7 @@
   window.card = {
     fillCards: fillCards,
     hideMapCard: hideMapCard,
-    mapCard: mapCard
+    mapCard: mapCard,
+    allCards: []
   };
 })();
