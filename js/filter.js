@@ -40,6 +40,7 @@
       return data.offer.features.indexOf(feature.value) >= 0;
     });
   };
+
   var filters = [isTypeFit, isRoomsFit, isGuestsFit, isPriceFit, isFeaturesFit];
 
   var filterData = function (data) {
@@ -52,5 +53,4 @@
   };
 
   window.filterData = filterData;
-
 })();
