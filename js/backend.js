@@ -5,41 +5,41 @@
   var SUCCESS_CODE = 200;
   var TIMEOUT = 10000;
 
-  var makeRequest = function (onSuccess, onError) {
+  var makeRequest = function (succesHandler, errorHandler) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.addEventListener('load', function () {
       if (xhr.status === SUCCESS_CODE) {
-        onSuccess(xhr.response);
+        succesHandler(xhr.response);
       } else {
-        onError('Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText);
+        errorHandler('Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
-
     xhr.addEventListener('error', function () {
-      onError('Произошла ошибка соединения');
+      errorHandler('Произошла ошибка соединения');
     });
-
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+      errorHandler('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
-
     xhr.timeout = TIMEOUT;
-
     return xhr;
   };
 
+  var load = function (succesHandler, errorHandler) {
+    var xhr = makeRequest(succesHandler, errorHandler);
+    xhr.open('GET', URL + '/data');
+    xhr.send();
+  };
+
+  var upload = function (data, succesHandler, errorHandler) {
+    var xhr = makeRequest(succesHandler, errorHandler);
+    xhr.open('POST', URL);
+    xhr.send(data);
+  };
+
   window.backend = {
-    load: function (onSuccess, onError) {
-      var xhr = makeRequest(onSuccess, onError);
-      xhr.open('GET', URL + '/data');
-      xhr.send();
-    },
-    upload: function (data, onSuccess, onError) {
-      var xhr = makeRequest(onSuccess, onError);
-      xhr.open('POST', URL);
-      xhr.send(data);
-    }
+    load: load,
+    upload: upload
   };
 
 })();
