@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var MAX_ROOMS = '100';
   var MAIN_PIN_Y_OFFSET = 16;
   var MAX_Y_COORDS = 500;
   var MIN_Y_COORDS = 100;
@@ -9,7 +10,7 @@
   var DEFAULT_TITLE = 'Милая, уютная квартирка в центре Токио';
   var DEFAULT_EMPTYSPACE = '';
   var DEFAULT_APPARTMENT = 'flat';
-  var DEFAULT_PRICE = '5000';
+  var DEFAULT_PRICE = '1000';
   var DEFAULT_ROOMS = '1';
   var DEFAULT_CHECKS = '12:00';
   var NOT_FOR_GUESTS_OPTION = 0;
@@ -24,6 +25,7 @@
   var timeOut = noticeForm.querySelector('#timeout');
   var mainPin = window.showCard.map.querySelector('.map__pin--main');
   var pricesList = PRICES.slice();
+  var capacityOptionElements = Array.from(formCapacity);
 
   var syncTimes = function (itemIn, itemOut) {
     itemOut.selectedIndex = itemIn.selectedIndex;
@@ -37,14 +39,21 @@
   var setFormToDefault = function () {
     formTitle.value = DEFAULT_EMPTYSPACE;
     formTitle.placeholder = DEFAULT_TITLE;
-    formAddress.value = DEFAULT_EMPTYSPACE;
-    formAddress.placeholder = DEFAULT_EMPTYSPACE;
+    formAddress.value = getMainPinLocation();
+    formAddress.placeholder = getMainPinLocation();
     apartmentType.value = DEFAULT_APPARTMENT;
     pricePerNight.value = DEFAULT_PRICE;
+    pricePerNight.min = DEFAULT_PRICE;
     formRooms.value = DEFAULT_ROOMS;
+    formCapacity.placeholder = DEFAULT_ROOMS;
     formCapacity.value = DEFAULT_ROOMS;
     timeIn.value = DEFAULT_CHECKS;
     timeOut.value = DEFAULT_CHECKS;
+    capacityOptionElements.forEach(function (item) {
+      if (!item.selected) {
+        item.disabled = true;
+      }
+    });
     window.error.removeError();
   };
 
@@ -85,7 +94,7 @@
   };
 
   var priceInvalidHandler = function () {
-    elementInvalidHandler(pricePerNight, 'valueMissing', 'Пожалуйста, укажите стоимость');
+    elementInvalidHandler(pricePerNight, 'rangeUnderflow', 'Пожалуйста, укажите минимальную стоимость: 0 рублей для лачуги, 1000 рублей для квартиры, 5000 рублей для дома, 10000 рублей для дворца');
   };
 
   var capacityInvalidHandler = function () {
@@ -154,6 +163,7 @@
     formAddress.placeholder = getMainPinLocation();
   };
 
+
   var findSelectedOption = function () {
     var selectedOption = '';
     for (var i = 0; i < formRooms.length; i++) {
@@ -172,15 +182,17 @@
 
   var setGuestOptions = function () {
     var selectedOptionValue = findSelectedOption(formRooms).value;
-    var capacityOptionElements = Array.from(formCapacity);
     setOptionDisabled(capacityOptionElements, true);
-    if (selectedOptionValue === '100') {
+    if (selectedOptionValue === MAX_ROOMS) {
       capacityOptionElements[NOT_FOR_GUESTS_OPTION].disabled = false;
       capacityOptionElements[NOT_FOR_GUESTS_OPTION].selected = true;
     } else {
       var capacityOptions = capacityOptionElements.slice(1);
       capacityOptions.length = selectedOptionValue;
       setOptionDisabled(capacityOptions, false);
+      capacityOptions.forEach(function (option) {
+        option.selected = true;
+      });
     }
   };
 
@@ -189,7 +201,8 @@
   window.form = {
     setFormAddress: setFormAddress,
     mainPin: mainPin,
-    noticeForm: noticeForm
+    noticeForm: noticeForm,
+    setFormToDefault: setFormToDefault
   };
 
 })();

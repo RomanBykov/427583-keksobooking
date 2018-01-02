@@ -11,6 +11,7 @@
     window.showCard.map.classList.remove('map--faded');
     window.form.noticeForm.classList.remove('notice__form--disabled');
     window.util.setInputsAbled();
+    window.form.setFormToDefault();
   };
 
   var mainPinKeyDownHandler = function (evt) {

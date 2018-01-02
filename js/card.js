@@ -4,12 +4,19 @@
   var mapCardTemplate = window.pin.template.querySelector('.map__card');
   var cardTemplate = mapCardTemplate.cloneNode(true);
 
-  var getFeatures = function (item) {
-    return '<li class="feature feature--' + item + '"></li>';
-  };
-
-  var getPhotos = function (item) {
-    return '<li><img src="' + item + '"></li>';
+  var getOfferItem = function (arr, offerItem, itemClass) {
+    arr.forEach(function (item) {
+      var liElement = document.createElement('li');
+      if (itemClass) {
+        liElement.classList.add('feature');
+        liElement.classList.add(itemClass + item);
+      } else {
+        var photo = document.createElement('img');
+        photo.src = item;
+        liElement.appendChild(photo);
+      }
+      offerItem.appendChild(liElement);
+    });
   };
 
   var AppartmentTypes = {
@@ -31,11 +38,9 @@
     cardTemplate.querySelector('.popup__checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
     cardTemplate.querySelector('.popup__description').textContent = card.offer.description;
     cardTemplateFeatures.innerHTML = '';
-    cardTemplateFeatures.insertAdjacentHTML('afterbegin', card.offer.features.map(getFeatures).join(' '));
-    cardTemplate.appendChild(cardTemplateFeatures);
+    getOfferItem(card.offer.features, cardTemplateFeatures, 'feature--');
     cardTemplatePictures.innerHTML = '';
-    cardTemplatePictures.insertAdjacentHTML('afterbegin', card.offer.photos.map(getPhotos).join(''));
-    cardTemplate.appendChild(cardTemplatePictures);
+    getOfferItem(card.offer.photos, cardTemplatePictures);
     return cardTemplate;
   };
 
