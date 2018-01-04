@@ -37,10 +37,12 @@
     cardTemplate.querySelector('h4 + p').textContent = card.offer.rooms + ' комнат для ' + card.offer.guests + ' гостей';
     cardTemplate.querySelector('.popup__checkins').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
     cardTemplate.querySelector('.popup__description').textContent = card.offer.description;
-    cardTemplateFeatures.innerHTML = '';
+    cardTemplateFeatures.textContent = '';
     getOfferItem(card.offer.features, cardTemplateFeatures, 'feature--');
-    cardTemplatePictures.innerHTML = '';
+    cardTemplate.appendChild(cardTemplateFeatures);
+    cardTemplatePictures.textContent = '';
     getOfferItem(card.offer.photos, cardTemplatePictures);
+    cardTemplate.appendChild(cardTemplatePictures);
     return cardTemplate;
   };
 

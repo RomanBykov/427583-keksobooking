@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var MAX_ROOMS = '100';
+  var MAX_ROOMS = 100;
   var MAIN_PIN_Y_OFFSET = 16;
   var MAX_Y_COORDS = 500;
   var MIN_Y_COORDS = 100;
@@ -9,11 +9,14 @@
   var PRICES = ['1000', '0', '5000', '10000'];
   var DEFAULT_TITLE = 'Милая, уютная квартирка в центре Токио';
   var DEFAULT_EMPTYSPACE = '';
-  var DEFAULT_APPARTMENT = 'flat';
   var DEFAULT_PRICE = '1000';
   var DEFAULT_ROOMS = '1';
   var DEFAULT_CHECKS = '12:00';
   var NOT_FOR_GUESTS_OPTION = 0;
+  var FLAT_VALUE = 'flat';
+  var BUNGALO_VALUE = 'bungalo';
+  var HOUSE_VALUE = 'house';
+  var PALACE_VALUE = 'palace';
   var noticeForm = document.querySelector('.notice__form');
   var formAddress = noticeForm.querySelector('#address');
   var formTitle = noticeForm.querySelector('#title');
@@ -41,7 +44,7 @@
     formTitle.placeholder = DEFAULT_TITLE;
     formAddress.value = getMainPinLocation();
     formAddress.placeholder = getMainPinLocation();
-    apartmentType.value = DEFAULT_APPARTMENT;
+    apartmentType.value = FLAT_VALUE;
     pricePerNight.value = DEFAULT_PRICE;
     pricePerNight.min = DEFAULT_PRICE;
     formRooms.value = DEFAULT_ROOMS;
@@ -94,7 +97,20 @@
   };
 
   var priceInvalidHandler = function () {
-    elementInvalidHandler(pricePerNight, 'rangeUnderflow', 'Пожалуйста, укажите минимальную стоимость: 0 рублей для лачуги, 1000 рублей для квартиры, 5000 рублей для дома, 10000 рублей для дворца');
+    if (pricePerNight.validity.rangeUnderflow && apartmentType.value === FLAT_VALUE) {
+      pricePerNight.setCustomValidity('Для квартиры минимальная цена за ночь 1000 рублей');
+      return window.util.getInvalidState(pricePerNight);
+    } else if (pricePerNight.validity.rangeUnderflow && apartmentType.value === BUNGALO_VALUE) {
+      pricePerNight.setCustomValidity('Для лачуги минимальная цена за ночь 0 рублей');
+      return window.util.getInvalidState(pricePerNight);
+    } else if (pricePerNight.validity.rangeUnderflow && apartmentType.value === HOUSE_VALUE) {
+      pricePerNight.setCustomValidity('Для дома минимальная цена за ночь 5000 рублей');
+      return window.util.getInvalidState(pricePerNight);
+    } else if (pricePerNight.validity.rangeUnderflow && apartmentType.value === PALACE_VALUE) {
+      pricePerNight.setCustomValidity('Для дворца минимальная цена за ночь 10000 рублей');
+      return window.util.getInvalidState(pricePerNight);
+    }
+    return window.util.getValidState(pricePerNight);
   };
 
   var capacityInvalidHandler = function () {
@@ -163,25 +179,14 @@
     formAddress.placeholder = getMainPinLocation();
   };
 
-
-  var findSelectedOption = function () {
-    var selectedOption = '';
-    for (var i = 0; i < formRooms.length; i++) {
-      if (formRooms[i].selected) {
-        selectedOption = formRooms[i];
-      }
-    }
-    return selectedOption;
-  };
-
-  var setOptionDisabled = function (array, boolean) {
+  var setOptionDisabled = function (array, booleanValue) {
     array.forEach(function (option) {
-      option.disabled = boolean;
+      option.disabled = booleanValue;
     });
   };
 
   var setGuestOptions = function () {
-    var selectedOptionValue = findSelectedOption(formRooms).value;
+    var selectedOptionValue = parseInt(formRooms.value, 10);
     setOptionDisabled(capacityOptionElements, true);
     if (selectedOptionValue === MAX_ROOMS) {
       capacityOptionElements[NOT_FOR_GUESTS_OPTION].disabled = false;
