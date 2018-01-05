@@ -179,8 +179,8 @@
     formAddress.placeholder = getMainPinLocation();
   };
 
-  var setOptionDisabled = function (array, booleanValue) {
-    array.forEach(function (option) {
+  var setOptionDisabled = function (optionsArray, booleanValue) {
+    optionsArray.forEach(function (option) {
       option.disabled = booleanValue;
     });
   };

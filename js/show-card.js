@@ -3,7 +3,7 @@
 (function () {
   var ACTIVE_PIN_CLASS = 'map__pin--active';
   var MAIN_PIN_CLASS = 'map__pin--main';
-  var BUTTON = 'button';
+  var TARGET_TAG_NAME = 'button';
   var activePin = false;
   var mapCard = window.card.mapCard;
   var mapCardClose = mapCard.querySelector('.popup__close');
@@ -45,7 +45,7 @@
     var target = evt.target;
     var targetId = 0;
     while (target !== mapPins) {
-      if (target.tagName.toLowerCase() === BUTTON) {
+      if (target.tagName.toLowerCase() === TARGET_TAG_NAME) {
         removeActive();
         target.classList.add(ACTIVE_PIN_CLASS);
         activePin = target;
