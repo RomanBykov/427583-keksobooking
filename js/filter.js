@@ -1,6 +1,10 @@
 'use strict';
 
 (function () {
+  var VALUE_ANY = 'any';
+  var VALUE_TYPE = 'type';
+  var VALUE_ROOMS = 'rooms';
+  var VALUE_GUESTS = 'guests';
   var mapFilters = document.querySelector('.map__filters-container');
   var featuresFilters = mapFilters.querySelectorAll('[name="features"]');
   var typeFilter = mapFilters.querySelector('#housing-type');
@@ -15,13 +19,13 @@
   var filterValue = function (field, filter) {
     return function (data) {
       var condition = (data.offer[field]).toString(10) === filter.value;
-      return filter.value === 'any' ? true : condition;
+      return filter.value === VALUE_ANY ? true : condition;
     };
   };
 
-  var isTypeFit = filterValue('type', typeFilter);
-  var isRoomsFit = filterValue('rooms', roomsFilter);
-  var isGuestsFit = filterValue('guests', guestsFilter);
+  var isTypeFit = filterValue(VALUE_TYPE, typeFilter);
+  var isRoomsFit = filterValue(VALUE_ROOMS, roomsFilter);
+  var isGuestsFit = filterValue(VALUE_GUESTS, guestsFilter);
 
   var isPriceFit = function (data) {
     var condition = {
@@ -29,7 +33,7 @@
       middle: data.offer.price >= priceRange.MIN && data.offer.price < priceRange.MAX,
       low: data.offer.price < priceRange.MIN
     };
-    return priceFilter.value === 'any' ? true : condition[priceFilter.value];
+    return priceFilter.value === VALUE_ANY ? true : condition[priceFilter.value];
   };
 
   var isFeaturesFit = function (data) {

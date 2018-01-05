@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var MAX_ROOMS = 100;
   var MAIN_PIN_Y_OFFSET = 16;
   var MAX_Y_COORDS = 500;
   var MIN_Y_COORDS = 100;
@@ -8,11 +9,14 @@
   var PRICES = ['1000', '0', '5000', '10000'];
   var DEFAULT_TITLE = 'Милая, уютная квартирка в центре Токио';
   var DEFAULT_EMPTYSPACE = '';
-  var DEFAULT_APPARTMENT = 'flat';
-  var DEFAULT_PRICE = '5000';
+  var DEFAULT_PRICE = '1000';
   var DEFAULT_ROOMS = '1';
   var DEFAULT_CHECKS = '12:00';
   var NOT_FOR_GUESTS_OPTION = 0;
+  var FLAT_VALUE = 'flat';
+  var BUNGALO_VALUE = 'bungalo';
+  var HOUSE_VALUE = 'house';
+  var PALACE_VALUE = 'palace';
   var noticeForm = document.querySelector('.notice__form');
   var formAddress = noticeForm.querySelector('#address');
   var formTitle = noticeForm.querySelector('#title');
@@ -24,6 +28,7 @@
   var timeOut = noticeForm.querySelector('#timeout');
   var mainPin = window.showCard.map.querySelector('.map__pin--main');
   var pricesList = PRICES.slice();
+  var capacityOptionElements = Array.from(formCapacity);
 
   var syncTimes = function (itemIn, itemOut) {
     itemOut.selectedIndex = itemIn.selectedIndex;
@@ -37,14 +42,21 @@
   var setFormToDefault = function () {
     formTitle.value = DEFAULT_EMPTYSPACE;
     formTitle.placeholder = DEFAULT_TITLE;
-    formAddress.value = DEFAULT_EMPTYSPACE;
-    formAddress.placeholder = DEFAULT_EMPTYSPACE;
-    apartmentType.value = DEFAULT_APPARTMENT;
+    formAddress.value = getMainPinLocation();
+    formAddress.placeholder = getMainPinLocation();
+    apartmentType.value = FLAT_VALUE;
     pricePerNight.value = DEFAULT_PRICE;
+    pricePerNight.min = DEFAULT_PRICE;
     formRooms.value = DEFAULT_ROOMS;
+    formCapacity.placeholder = DEFAULT_ROOMS;
     formCapacity.value = DEFAULT_ROOMS;
     timeIn.value = DEFAULT_CHECKS;
     timeOut.value = DEFAULT_CHECKS;
+    capacityOptionElements.forEach(function (item) {
+      if (!item.selected) {
+        item.disabled = true;
+      }
+    });
     window.error.removeError();
   };
 
@@ -85,7 +97,20 @@
   };
 
   var priceInvalidHandler = function () {
-    elementInvalidHandler(pricePerNight, 'valueMissing', 'Пожалуйста, укажите стоимость');
+    if (pricePerNight.validity.rangeUnderflow && apartmentType.value === FLAT_VALUE) {
+      pricePerNight.setCustomValidity('Для квартиры минимальная цена за ночь 1000 рублей');
+      return window.util.getInvalidState(pricePerNight);
+    } else if (pricePerNight.validity.rangeUnderflow && apartmentType.value === BUNGALO_VALUE) {
+      pricePerNight.setCustomValidity('Для лачуги минимальная цена за ночь 0 рублей');
+      return window.util.getInvalidState(pricePerNight);
+    } else if (pricePerNight.validity.rangeUnderflow && apartmentType.value === HOUSE_VALUE) {
+      pricePerNight.setCustomValidity('Для дома минимальная цена за ночь 5000 рублей');
+      return window.util.getInvalidState(pricePerNight);
+    } else if (pricePerNight.validity.rangeUnderflow && apartmentType.value === PALACE_VALUE) {
+      pricePerNight.setCustomValidity('Для дворца минимальная цена за ночь 10000 рублей');
+      return window.util.getInvalidState(pricePerNight);
+    }
+    return window.util.getValidState(pricePerNight);
   };
 
   var capacityInvalidHandler = function () {
@@ -154,33 +179,25 @@
     formAddress.placeholder = getMainPinLocation();
   };
 
-  var findSelectedOption = function () {
-    var selectedOption = '';
-    for (var i = 0; i < formRooms.length; i++) {
-      if (formRooms[i].selected) {
-        selectedOption = formRooms[i];
-      }
-    }
-    return selectedOption;
-  };
-
-  var setOptionDisabled = function (array, boolean) {
-    array.forEach(function (option) {
-      option.disabled = boolean;
+  var setOptionDisabled = function (optionsArray, booleanValue) {
+    optionsArray.forEach(function (option) {
+      option.disabled = booleanValue;
     });
   };
 
   var setGuestOptions = function () {
-    var selectedOptionValue = findSelectedOption(formRooms).value;
-    var capacityOptionElements = Array.from(formCapacity);
+    var selectedOptionValue = parseInt(formRooms.value, 10);
     setOptionDisabled(capacityOptionElements, true);
-    if (selectedOptionValue === '100') {
+    if (selectedOptionValue === MAX_ROOMS) {
       capacityOptionElements[NOT_FOR_GUESTS_OPTION].disabled = false;
       capacityOptionElements[NOT_FOR_GUESTS_OPTION].selected = true;
     } else {
       var capacityOptions = capacityOptionElements.slice(1);
       capacityOptions.length = selectedOptionValue;
       setOptionDisabled(capacityOptions, false);
+      capacityOptions.forEach(function (option) {
+        option.selected = true;
+      });
     }
   };
 
@@ -189,7 +206,8 @@
   window.form = {
     setFormAddress: setFormAddress,
     mainPin: mainPin,
-    noticeForm: noticeForm
+    noticeForm: noticeForm,
+    setFormToDefault: setFormToDefault
   };
 
 })();
