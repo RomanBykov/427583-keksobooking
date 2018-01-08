@@ -33,6 +33,8 @@
     window.form.mainPin.addEventListener('mouseup', mainPinMouseUpHandler);
     window.form.mainPin.addEventListener('keydown', mainPinKeyDownHandler);
     mapFilters.addEventListener('change', filterChangeHandler);
+    window.upload.usersAvatar.addEventListener('change', window.upload.avatarChangeHandler);
+    window.upload.usersImage.addEventListener('change', window.upload.imageChangeHandler);
   };
 
   var showPins = function () {

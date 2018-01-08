@@ -17,6 +17,7 @@
   var BUNGALO_VALUE = 'bungalo';
   var HOUSE_VALUE = 'house';
   var PALACE_VALUE = 'palace';
+  var MUFFIN_AVATAR = 'img/muffin.png';
   var noticeForm = document.querySelector('.notice__form');
   var formAddress = noticeForm.querySelector('#address');
   var formTitle = noticeForm.querySelector('#title');
@@ -26,6 +27,7 @@
   var formCapacity = noticeForm.querySelector('#capacity');
   var timeIn = noticeForm.querySelector('#timein');
   var timeOut = noticeForm.querySelector('#timeout');
+  var formAvatar = noticeForm.querySelector('.notice__preview img');
   var mainPin = window.showCard.map.querySelector('.map__pin--main');
   var pricesList = PRICES.slice();
   var capacityOptionElements = Array.from(formCapacity);
@@ -57,6 +59,13 @@
         item.disabled = true;
       }
     });
+    var uploadPhotos = noticeForm.querySelectorAll('.upload__photo');
+    if (uploadPhotos) {
+      for (var k = 0; k < uploadPhotos.length; k++) {
+        uploadPhotos[k].remove();
+      }
+    }
+    formAvatar.src = MUFFIN_AVATAR;
     window.error.removeError();
   };
 

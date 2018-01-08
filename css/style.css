@@ -741,6 +741,20 @@ textarea:focus
 .form__photo-container
 {
     width: 140px;
+    display: flex;
+}
+
+.form__photo-container .upload .drop-zone {
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.form__photo-container img
+{
+    width: 65px;
+    height: 65px;
+    flex-shrink: 0;
+    margin: 2.5px;
 }
 
 .form__element--submit
